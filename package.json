@@ -1,0 +1,29 @@
+{
+  "name": "full-stack",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "dev:clinet": "pnpm --filter clinet dev",
+    "dev:server": "pnpm --filter server start:dev",
+    "build:clinet": "pnpm --filter clinet build",
+    "build:server": "pnpm --filter server build",
+    "start:clinet": "pnpm --filter clinet start",
+    "start:server": "pnpm --filter server start",
+    "lint:clinet": "pnpm --filter clinet lint",
+    "lint:server": "pnpm --filter server lint",
+    "dev": "pnpm -r --parallel --filter server --filter clinet run dev",
+    "build": "pnpm -r --parallel --filter server --filter clinet run build",
+    "start": "pnpm -r --parallel --filter server --filter clinet run start",
+    "changeset": "changeset",
+    "version-packages": "changeset version && pnpm install --lockfile-only",
+    "release": "pnpm -r build && changeset publish"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.16.1",
+  "devDependencies": {
+    "@changesets/cli": "^2.29.7"
+  }
+}
