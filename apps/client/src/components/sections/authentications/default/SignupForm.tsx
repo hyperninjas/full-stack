@@ -14,7 +14,6 @@ import {
 import Grid from "@mui/material/Grid";
 import IconifyIcon from "components/base/IconifyIcon";
 import PasswordTextField from "components/common/PasswordTextField";
-import ViewOnlyAlert from "components/sections/authentications/common/ViewOnlyAlert";
 import { SignInResponse } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import paths from "routes/paths";
@@ -24,7 +23,6 @@ import SocialAuth from "./SocialAuth";
 interface SignupFormProps {
   handleSignup: (data: SignupFormValues) => Promise<SignInResponse | undefined>;
   socialAuth?: boolean;
-  provider?: "jwt" | "firebase";
 }
 
 export interface SignupFormValues {
@@ -47,7 +45,6 @@ const schema = yup
 const SignupForm = ({
   handleSignup,
   socialAuth = true,
-  provider = "jwt",
 }: SignupFormProps) => {
   const {
     register,
@@ -89,14 +86,6 @@ const SignupForm = ({
           p: { xs: 3, sm: 5 },
           mb: 5,
         }}>
-        {provider === "firebase" &&
-          process.env.NEXT_PUBLIC_BUILD_MODE === "production" && (
-            <Grid size={12} sx={{ mb: 1 }}>
-              <ViewOnlyAlert
-                docLink={`https://aurora.themewagon.com/documentation/authentication#firebase`}
-              />
-            </Grid>
-          )}
         <Grid size={12}>
           <Stack
             direction={{ xs: "column", sm: "row" }}
@@ -113,11 +102,7 @@ const SignupForm = ({
               }}>
               Already have an account?
               <Link
-                href={
-                  provider === "firebase"
-                    ? paths.defaultFirebaseLogin
-                    : paths.defaultJwtLogin
-                }
+                href={paths.defaultAuth0Login}
                 sx={{ ml: 1 }}>
                 Log in
               </Link>

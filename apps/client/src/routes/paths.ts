@@ -2,8 +2,6 @@ export const rootPaths = {
   root: '/',
   pagesRoot: 'pages',
   authRoot: 'authentication',
-  authDefaultJwtRoot: 'default/jwt',
-  authDefaultFirebaseRoot: 'default/firebase',
   authDefaultAuth0Root: 'default/auth0',
   errorRoot: 'error',
 };
@@ -11,17 +9,8 @@ export const rootPaths = {
 const paths = {
   starter: `/${rootPaths.pagesRoot}/starter`,
 
-  defaultJwtLogin: `/${rootPaths.authRoot}/${rootPaths.authDefaultJwtRoot}/login`,
-  defaultJwtSignup: `/${rootPaths.authRoot}/${rootPaths.authDefaultJwtRoot}/sign-up`,
-  defaultJwtForgotPassword: `/${rootPaths.authRoot}/${rootPaths.authDefaultJwtRoot}/forgot-password`,
-  defaultJwt2FA: `/${rootPaths.authRoot}/${rootPaths.authDefaultJwtRoot}/2fa`,
-  defaultJwtSetPassword: `/${rootPaths.authRoot}/${rootPaths.authDefaultJwtRoot}/set-password`,
-
   defaultAuth0Login: `/${rootPaths.authRoot}/${rootPaths.authDefaultAuth0Root}/login`,
-
-  defaultFirebaseLogin: `/${rootPaths.authRoot}/${rootPaths.authDefaultFirebaseRoot}/login`,
-  defaultFirebaseSignup: `/${rootPaths.authRoot}/${rootPaths.authDefaultFirebaseRoot}/sign-up`,
-  defaultFirebaseForgotPassword: `/${rootPaths.authRoot}/${rootPaths.authDefaultFirebaseRoot}/forgot-password`,
+  
   notifications: `/${rootPaths.pagesRoot}/notifications`,
 
   defaultLoggedOut: `/${rootPaths.authRoot}/default/logged-out`,
@@ -30,18 +19,8 @@ const paths = {
 };
 
 export const authPaths = {
-  /* ---------------------------------JWT----------------------------------------- */
-  login: paths.defaultJwtLogin,
-  signup: paths.defaultJwtSignup,
-  forgotPassword: paths.defaultJwtForgotPassword,
-  setNewPassword: paths.defaultJwtSetPassword,
-  twoFactorAuth: paths.defaultJwt2FA,
-  /* ---------------------------------Firebase----------------------------------------- */
-  // login: paths.defaultFirebaseLogin,
-  // signup: paths.defaultFirebaseSignup,
-  // forgotPassword: paths.defaultFirebaseForgotPassword,
   /* ---------------------------------Auth0----------------------------------------- */
-  // login: paths.defaultAuth0Login,
+  login: paths.defaultAuth0Login,
 };
 
 export const apiEndpoints = {

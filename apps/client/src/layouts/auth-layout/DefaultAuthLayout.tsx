@@ -12,8 +12,6 @@ import { cssVarRgba } from 'lib/utils';
 import paths from 'routes/paths';
 import Logo from 'components/common/Logo';
 import Auth0Icon from 'components/icons/Auth0Icon';
-import FirebaseIcon from 'components/icons/FirebaseIcon';
-import JwtIcon from 'components/icons/JwtIcon';
 import DefaultLoader from 'components/loading/DefaultLoader';
 
 const DefaultAuthLayout = ({ children }: PropsWithChildren) => {
@@ -22,8 +20,8 @@ const DefaultAuthLayout = ({ children }: PropsWithChildren) => {
   const { isDark } = useThemeMode();
 
   const activeTab = useMemo(() => {
-    if (segment === 'auth0' || segment === 'firebase' || segment === 'jwt') return segment;
-    return 'jwt';
+    if (segment === 'auth0') return segment;
+    return 'auth0';
   }, [segment]);
 
   return (
@@ -97,32 +95,10 @@ const DefaultAuthLayout = ({ children }: PropsWithChildren) => {
               <Tab
                 component={Link}
                 underline="none"
-                href={paths.defaultJwtLogin}
-                value="jwt"
-                label="jwt"
-                icon={<JwtIcon />}
-                iconPosition="start"
-                disableRipple
-                sx={{ px: 1.75 }}
-              />
-              <Tab
-                component={Link}
-                underline="none"
                 href={paths.defaultAuth0Login}
                 value="auth0"
                 label="Auth 0"
                 icon={<Auth0Icon />}
-                iconPosition="start"
-                disableRipple
-                sx={{ px: 1.75 }}
-              />
-              <Tab
-                component={Link}
-                underline="none"
-                href={paths.defaultFirebaseLogin}
-                value="firebase"
-                label="Firebase"
-                icon={<FirebaseIcon />}
                 iconPosition="start"
                 disableRipple
                 sx={{ px: 1.75 }}

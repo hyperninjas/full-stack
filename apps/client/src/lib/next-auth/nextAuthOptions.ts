@@ -1,15 +1,9 @@
 import { NextAuthOptions, User } from 'next-auth';
 import Auth0Provider from 'next-auth/providers/auth0';
 import AzureADProvider from 'next-auth/providers/azure-ad';
-import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import { users } from 'data/users';
-import paths, { apiEndpoints } from 'routes/paths';
-import axiosInstance from 'services/axios/axiosInstance';
-import {
-  firebaseLoginProviderConfig,
-  firebaseSignupProviderConfig,
-} from 'services/firebase/firebase-provider';
+import paths from 'routes/paths';
 
 export interface SessionUser extends User {
   email: string;
@@ -29,56 +23,6 @@ export const demoUser: SessionUser = {
 
 export const authOptions: NextAuthOptions = {
   providers: [
-    CredentialsProvider({
-      name: 'Credentials',
-      credentials: {
-        email: { label: 'Email', type: 'text' },
-        password: { label: 'Password', type: 'password' },
-      },
-      async authorize(credentials): Promise<any> {
-        if (credentials) {
-          try {
-            const res = await axiosInstance.post(apiEndpoints.login, {
-              email: credentials.email,
-              password: credentials.password,
-            });
-            return res;
-          } catch (error: any) {
-            throw new Error(error.data?.message);
-          }
-        }
-        return null;
-      },
-    }),
-    CredentialsProvider({
-      id: 'jwt-signup',
-      name: 'Jwt Signup',
-      credentials: {
-        name: { label: 'Name', type: 'text' },
-        email: { label: 'Email', type: 'text' },
-        password: { label: 'Password', type: 'password' },
-      },
-      async authorize(credentials): Promise<any> {
-        if (credentials) {
-          try {
-            const res = await axiosInstance.post(apiEndpoints.register, {
-              name: credentials.name,
-              email: credentials.email,
-              password: credentials.password,
-            });
-
-            return res;
-          } catch (error: any) {
-            throw new Error(error.data?.message);
-          }
-        }
-        return null;
-      },
-    }),
-
-    CredentialsProvider(firebaseLoginProviderConfig),
-    CredentialsProvider(firebaseSignupProviderConfig),
-
     Auth0Provider({
       clientId: process.env.AUTH0_CLIENT_ID as string,
       clientSecret: process.env.AUTH0_CLIENT_SECRET as string,
@@ -126,7 +70,7 @@ export const authOptions: NextAuthOptions = {
   },
 
   pages: {
-    signIn: paths.defaultJwtLogin,
+    signIn: paths.defaultAuth0Login,
     signOut: paths.defaultLoggedOut,
   },
 };

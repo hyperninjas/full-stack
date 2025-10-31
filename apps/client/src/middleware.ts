@@ -3,7 +3,7 @@ import paths from 'routes/paths';
 
 export default withAuth({
   pages: {
-    signIn: paths.defaultJwtLogin,
+    signIn: paths.defaultAuth0Login,
     signOut: paths.defaultLoggedOut,
   },
 });

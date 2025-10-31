@@ -20,12 +20,10 @@ import Grid from '@mui/material/Grid';
 import { rootPaths } from 'routes/paths';
 import * as yup from 'yup';
 import PasswordTextField from 'components/common/PasswordTextField';
-import ViewOnlyAlert from 'components/sections/authentications/common/ViewOnlyAlert';
 import DefaultCredentialAlert from '../common/DefaultCredentialAlert';
 import SocialAuth from './SocialAuth';
 
 interface LoginFormProps {
-  provider?: 'jwt' | 'firebase';
   handleLogin: (data: LoginFormValues) => Promise<SignInResponse | undefined>;
   signUpLink: string;
   socialAuth?: boolean;
@@ -49,7 +47,6 @@ const schema = yup
   .required();
 
 const LoginForm = ({
-  provider = 'jwt',
   handleLogin,
   signUpLink,
   forgotPasswordLink,
@@ -104,12 +101,6 @@ const LoginForm = ({
           mb: 5,
         }}
       >
-        {provider === 'firebase' && process.env.NEXT_PUBLIC_BUILD_MODE === 'production' && (
-          <Grid size={12} sx={{ mb: 1 }}>
-            <ViewOnlyAlert docLink="https://aurora.themewagon.com/documentation/authentication#firebase" />
-          </Grid>
-        )}
-
         <Grid size={12}>
           <Stack
             direction={{ xs: 'column', sm: 'row' }}
