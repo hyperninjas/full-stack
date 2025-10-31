@@ -20,20 +20,20 @@ WORKDIR /usr/src/app
 COPY pnpm-lock.yaml pnpm-workspace.yaml ./
 
 # Copy package manifests that affect dependency graph
-COPY apps/clinet/package.json apps/clinet/package.json
+COPY apps/client/package.json apps/client/package.json
 
 # Install deps with cache (workspace context)
 RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
   pnpm install --frozen-lockfile
 
 # Copy only the client workspace sources
-COPY apps/clinet/ apps/clinet/
+COPY apps/client/ apps/client/
 
 # Disable telemetry in builds
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Build only the client workspace
-RUN pnpm --filter=clinet run build
+RUN pnpm --filter=client run build
 
 # ---------- Runtime ----------
 FROM node:22-alpine AS runner
@@ -45,16 +45,16 @@ WORKDIR /app
 RUN apk add --no-cache libc6-compat
 
 # Copy Next standalone server and static assets
-COPY --from=build /usr/src/app/apps/clinet/.next/standalone ./
-COPY --from=build /usr/src/app/apps/clinet/.next/static ./apps/clinet/.next/static
-COPY --from=build /usr/src/app/apps/clinet/public ./apps/clinet/public
+COPY --from=build /usr/src/app/apps/client/.next/standalone ./
+COPY --from=build /usr/src/app/apps/client/.next/static ./apps/client/.next/static
+COPY --from=build /usr/src/app/apps/client/public ./apps/client/public
 
 # Expose Next's default port
 ENV PORT=3000
 EXPOSE 3000
 
 # Change working directory to the app workspace inside standalone bundle
-WORKDIR /app/apps/clinet
+WORKDIR /app/apps/client
 
 # Drop privileges
 USER node

@@ -57,18 +57,18 @@ services:
   client:
     build:
       context: .
-      dockerfile: apps/clinet/Dockerfile
+      dockerfile: apps/client/Dockerfile
     image: client:prod
     container_name: client
     depends_on:
       - server
     restart: unless-stopped
     env_file:
-      - ./apps/clinet/.env
+      - ./apps/client/.env
     environment:
       NODE_ENV: production
       PORT: ${CLIENT_PORT:-3000}
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-/api}  # client calls go to /api on same host
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-/api} # client calls go to /api on same host
     networks:
       - appnet
     labels:
