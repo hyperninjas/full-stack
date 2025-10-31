@@ -2,7 +2,7 @@
 
 A pnpm workspace with two apps under `apps/`:
 
-- `apps/clinet`: Next.js app
+- `apps/client`: Next.js app
 - `apps/server`: NestJS API
 
 ## Prerequisites
@@ -20,22 +20,22 @@ pnpm install
 
 - **Add a runtime dependency**
   ```bash
-  pnpm add <pkg> --filter clinet
+  pnpm add <pkg> --filter client
   pnpm add <pkg> --filter server
   ```
 - **Add a dev dependency**
   ```bash
-  pnpm add -D <pkg> --filter clinet
+  pnpm add -D <pkg> --filter client
   pnpm add -D <pkg> --filter server
   ```
 - **Remove a dependency**
   ```bash
-  pnpm remove <pkg> --filter clinet
+  pnpm remove <pkg> --filter client
   pnpm remove <pkg> --filter server
   ```
 - **Add the same dependency to both apps**
   ```bash
-  pnpm add <pkg> --filter clinet --filter server
+  pnpm add <pkg> --filter client --filter server
   ```
 
 ## Workspace
@@ -48,11 +48,11 @@ pnpm install
 - `pnpm dev` — run client and server in parallel
 - `pnpm build` — build both apps in parallel
 - `pnpm start` — start both apps in parallel (expects they are built)
-- `pnpm dev:clinet` — run Next.js dev server
+- `pnpm dev:client` — run Next.js dev server
 - `pnpm dev:server` — run NestJS in watch mode
-- `pnpm build:clinet` / `pnpm build:server`
-- `pnpm start:clinet` / `pnpm start:server`
-- `pnpm lint:clinet` / `pnpm lint:server`
+- `pnpm build:client` / `pnpm build:server`
+- `pnpm start:client` / `pnpm start:server`
+- `pnpm lint:client` / `pnpm lint:server`
 
 ## Development
 
@@ -62,7 +62,7 @@ pnpm install
 
 If you hit a port conflict (`EADDRINUSE: 3000`), adjust one app’s port via env:
 
-- Next.js: `PORT=3001 pnpm dev:clinet`
+- Next.js: `PORT=3001 pnpm dev:client`
 - NestJS: configure `apps/server/src/main.ts` to read `process.env.PORT` with a fallback.
 
 ## Changesets (Versioning + Changelogs)
@@ -84,7 +84,7 @@ If you hit a port conflict (`EADDRINUSE: 3000`), adjust one app’s port via env
 ## Git hooks (Husky) & Commitlint
 
 - **Hooks installation**: hooks are installed on `pnpm install` via the root `prepare` script (`husky install`).
-- **Pre-commit**: runs `pnpm run lint`, which fans out to `apps/clinet` and `apps/server` lint scripts.
+- **Pre-commit**: runs `pnpm run lint`, which fans out to `apps/client` and `apps/server` lint scripts.
 - **Commit message check**: `commit-msg` runs Conventional Commits via Commitlint.
 
 ### Conventional commit examples
@@ -92,7 +92,7 @@ If you hit a port conflict (`EADDRINUSE: 3000`), adjust one app’s port via env
 ```text
 feat: add homepage hero
 fix(server): handle missing env var
-chore(clinet): update eslint config
+chore(client): update eslint config
 docs: update README
 ```
 
@@ -118,7 +118,7 @@ Notes:
 
 ```bash
 apps/
-  clinet/
+  client/
   server/
 .changeset/
 package.json
