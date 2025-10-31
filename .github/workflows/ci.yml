@@ -4,6 +4,8 @@ on:
   pull_request:
     branches:
       - main
+env:
+  DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
 
 jobs:
   lint:
