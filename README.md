@@ -7,8 +7,9 @@ A pnpm workspace with two apps under `apps/`:
 
 ## Prerequisites
 
-- pnpm installed
-- Node.js LTS recommended
+- Node.js 22.x
+- pnpm 10.16.1 (repo is pinned via `packageManager`)
+- Postgres (local) for server development
 
 ## Install
 
@@ -43,6 +44,21 @@ pnpm install
 - Defined in `pnpm-workspace.yaml` with `packages: - apps/*`.
 - Root `package.json` contains scripts to run each app and both together.
 
+## Database (Prisma + Postgres)
+
+- Ensure a local Postgres is running and `DATABASE_URL` is set (used by CI and local):
+  ```bash
+  export DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres"
+  ```
+- Generate Prisma client:
+  ```bash
+  pnpm -r --filter server run prisma:generate
+  ```
+- Create/update schema in your DB:
+  ```bash
+  pnpm --filter server exec prisma db push
+  ```
+
 ## Common Scripts (run from repo root)
 
 - `pnpm dev` — run client and server in parallel
@@ -53,6 +69,15 @@ pnpm install
 - `pnpm build:client` / `pnpm build:server`
 - `pnpm start:client` / `pnpm start:server`
 - `pnpm lint:client` / `pnpm lint:server`
+
+## Testing
+
+- Server tests (Jest):
+  ```bash
+  pnpm --filter server test
+  pnpm --filter server test:cov
+  pnpm --filter server test:e2e
+  ```
 
 ## Development
 
@@ -114,6 +139,13 @@ Notes:
 - Packages in `apps/` are `"private": true` and will not be published.
 - Initialize git and ensure your default branch is `main` to match Changesets baseBranch.
 
+## CI & Repository automation
+
+- CI workflow builds and lints on PRs to `main`.
+- Semantic PR title check enforces Conventional Commit-style PR titles.
+- Labels are defined in `.github/labels.yml`. Sync via Actions → "Sync Labels".
+- Issue templates (Bug / Feature / Task) and a PR template are provided in `.github/`.
+
 ## Project Structure
 
 ```bash
@@ -129,3 +161,4 @@ pnpm-workspace.yaml
 
 - Change base port to avoid conflicts or stop the process occupying it.
 - Ensure `git` is initialized and the default branch is `main` for the Changesets suggested-flow to work without warnings.
+- Next.js build warning about `outputFileTracingRoot` being absolute is addressed in `apps/client/next.config.ts`.
