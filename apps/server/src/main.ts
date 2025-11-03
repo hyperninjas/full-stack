@@ -36,6 +36,7 @@ async function bootstrap() {
             "'self'",
             'https://cdn.jsdelivr.net',
             'http://localhost:3000',
+            'http://localhost:4000',
           ],
         },
       },
@@ -45,7 +46,17 @@ async function bootstrap() {
     origin: corsConfig.origins,
     credentials: corsConfig.credentials,
     methods: corsConfig.methods,
-    allowedHeaders: corsConfig.allowedHeaders,
+    // allowedHeaders: corsConfig.allowedHeaders,
+    allowedHeaders:
+      corsConfig.allowedHeaders.length > 0
+        ? corsConfig.allowedHeaders
+        : [
+            'Content-Type',
+            'Authorization',
+            'X-Requested-With',
+            'Accept',
+            'Origin',
+          ],
   });
   app.useGlobalPipes(
     new ValidationPipe({
@@ -72,7 +83,7 @@ async function bootstrap() {
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
 
-  // app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api');
   await app.listen(port);
   Logger.debug(`Server started on http://localhost:${port}`);
   Logger.debug(

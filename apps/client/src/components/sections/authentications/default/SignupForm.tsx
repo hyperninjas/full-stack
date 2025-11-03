@@ -14,14 +14,13 @@ import {
 import Grid from "@mui/material/Grid";
 import IconifyIcon from "components/base/IconifyIcon";
 import PasswordTextField from "components/common/PasswordTextField";
-import { SignInResponse } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import paths from "routes/paths";
 import * as yup from "yup";
 import SocialAuth from "./SocialAuth";
 
 interface SignupFormProps {
-  handleSignup: (data: SignupFormValues) => Promise<SignInResponse | undefined>;
+  handleSignup: (data: SignupFormValues) => Promise<any | undefined>;
   socialAuth?: boolean;
 }
 

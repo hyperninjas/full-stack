@@ -25,6 +25,7 @@ export const auth: AuthInstance = betterAuth({
     transaction: true,
     debugLogs: true,
   }),
+  trustedOrigins: ['http://localhost:3000'],
   // npx @better-auth/cli@latest generate
   appName: 'Server',
   plugins: [

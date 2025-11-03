@@ -15,6 +15,7 @@
     "nest": "nest",
     "dev": "pnpm run start:dev",
     "prisma:generate": "pnpx prisma generate",
+    "prisma:dev": "pnpx prisma migrate dev",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
