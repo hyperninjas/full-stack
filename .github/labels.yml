@@ -1,0 +1,62 @@
+# Standard labels
+- name: bug
+  color: d73a4a
+  description: Something isn't working
+- name: enhancement
+  color: a2eeef
+  description: New feature or request
+- name: chore
+  color: 8ed1fc
+  description: Maintenance or refactor task
+- name: documentation
+  color: 0075ca
+  description: Improvements or additions to documentation
+- name: ci
+  color: 0e8a16
+  description: Continuous integration changes
+- name: test
+  color: 5319e7
+  description: Tests and coverage
+- name: refactor
+  color: 0366d6
+  description: Code refactor
+- name: performance
+  color: fbca04
+  description: Performance improvements
+- name: security
+  color: ee0701
+  description: Security related
+- name: dependencies
+  color: 0025ff
+  description: Dependency updates
+- name: good first issue
+  color: 7057ff
+  description: Good for newcomers
+- name: help wanted
+  color: 008672
+  description: Extra attention is needed
+
+# Priority
+- name: priority:high
+  color: b60205
+  description: Must be addressed as soon as possible
+- name: priority:medium
+  color: d93f0b
+  description: Should be addressed soon
+- name: priority:low
+  color: 0e8a16
+  description: Can be addressed later
+
+# Status
+- name: status:blocked
+  color: 5319e7
+  description: Blocked by external dependencies
+- name: status:needs-triage
+  color: cccccc
+  description: Needs triage
+- name: status:in-progress
+  color: fbca04
+  description: Work in progress
+- name: status:review
+  color: 1d76db
+  description: Awaiting review
