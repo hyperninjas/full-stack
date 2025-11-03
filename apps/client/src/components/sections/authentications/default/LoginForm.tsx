@@ -24,7 +24,7 @@ import DefaultCredentialAlert from '../common/DefaultCredentialAlert';
 import SocialAuth from './SocialAuth';
 
 interface LoginFormProps {
-  handleLogin: (data: LoginFormValues) => Promise<SignInResponse | undefined>;
+  handleLogin: (data: LoginFormValues) => Promise<any | undefined>;
   signUpLink: string;
   socialAuth?: boolean;
   forgotPasswordLink?: string;
@@ -34,6 +34,7 @@ interface LoginFormProps {
 export interface LoginFormValues {
   email: string;
   password: string;
+  rememberDevice: boolean;
 }
 
 const schema = yup
@@ -43,6 +44,7 @@ const schema = yup
       .email('Please provide a valid email address.')
       .required('This field is required'),
     password: yup.string().required('This field is required'),
+    rememberDevice: yup.boolean().optional().default(false),
   })
   .required();
 
@@ -70,7 +72,7 @@ const LoginForm = ({
 
   const onSubmit = async (data: LoginFormValues) => {
     const res = await handleLogin(data);
-    if (res?.ok) {
+    if (res?.data?.token) {
       router.refresh();
       router.push(callbackUrl ? callbackUrl : rootPaths.root);
     }
@@ -193,8 +195,8 @@ const LoginForm = ({
                   }}
                 >
                   {rememberDevice && (
-                    <FormControlLabel
-                      control={<Checkbox name="checked" color="primary" size="small" />}
+                    <FormControlLabel {...register('rememberDevice')} 
+                      control={<Checkbox id='rememberDevice' name="rememberDevice" color="primary" size="small" />}
                       label={
                         <Typography
                           variant="subtitle2"

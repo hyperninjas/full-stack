@@ -1,17 +1,20 @@
 'use client';
 
-import { signIn } from 'next-auth/react';
 import LoginForm from 'components/sections/authentications/default/LoginForm';
-import paths from 'routes/paths';
-import { defaultJwtAuthCredentials } from 'config';
+import paths, { rootPaths } from 'routes/paths';
+import { authClient } from 'lib/auth-client';
+import { useRouter } from 'next/navigation';
 
 const Page = () => {
-  const handleLogin = async (data: { email: string; password: string }) => {
-    return await signIn('credentials', {
-      email: data.email,
-      password: data.password,
-      redirect: false,
-    });
+  const router = useRouter()
+  const handleLogin = async (data: { email: string; password: string , rememberDevice: boolean }) => {
+   try {
+    const response = await authClient.signIn.email(data)
+    return response
+
+   } catch (error) {
+    return error
+   }
   };
 
   return (
@@ -21,7 +24,6 @@ const Page = () => {
       forgotPasswordLink={paths.forgotPassword}
       socialAuth={false}
       rememberDevice={true}
-      defaultCredential={defaultJwtAuthCredentials}
     />
   );
 };
