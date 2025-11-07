@@ -6,7 +6,10 @@
     "dev": "next dev --turbopack -p 3000",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "openapi:clean": "rm -rf src/api/generated",
+    "openapi:gen": "OPENAPI_GENERATOR_SKIP_VALIDATE_SPEC=false OPENAPI_GENERATOR_VERSION=latest OPENAPI_GENERATOR_POST_PROCESS_FILE=\"sh ./scripts/openapi-postprocess.sh\" openapi-generator-cli generate -c openapi-generator.config.json",
+    "openapi": "pnpm openapi:clean && pnpm openapi:gen"
   },
   "dependencies": {
     "@emotion/cache": "^11.14.0",
@@ -43,7 +46,6 @@
     "lodash.merge": "^4.6.2",
     "lottie-react": "^2.4.1",
     "next": "15.5.6",
-    "next-auth": "^4.24.11",
     "notistack": "^3.0.2",
     "react": "19.2.0",
     "react-dom": "19.2.0",
@@ -58,6 +60,8 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
+    "@openapitools/openapi-generator-cli": "^2.25.0",
+    "@trivago/prettier-plugin-sort-imports": "^6.0.0",
     "@types/node": "^24.8.1",
     "@types/react": "19.2.2",
     "@types/react-dom": "19.2.2",

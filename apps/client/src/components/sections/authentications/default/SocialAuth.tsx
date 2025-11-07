@@ -1,9 +1,9 @@
-import { signIn } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
 import { Button } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { useSettingsContext } from 'providers/SettingsProvider';
 import { rootPaths } from 'routes/paths';
+import { authClient } from '@/auth';
 import Image from 'components/base/Image';
 
 const SocialAuth = () => {
@@ -15,21 +15,10 @@ const SocialAuth = () => {
 
   const handleGoogleLogin = async () => {
     try {
-      const res = await signIn('google', {
-        callbackUrl: callbackUrl || rootPaths.root,
+      await authClient.signIn.social({
+        provider: 'google',
+        callbackURL: 'http://localhost:3001',
       });
-      console.log({ res });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleAzureLogin = async () => {
-    try {
-      const res = await signIn('azure-ad', {
-        callbackUrl: callbackUrl || rootPaths.root,
-      });
-      console.log({ res });
     } catch (error) {
       console.error(error);
     }
@@ -46,7 +35,7 @@ const SocialAuth = () => {
       <Grid
         size={{
           xs: 12,
-          lg: 6,
+          lg: 12,
         }}
       >
         <Button
@@ -63,7 +52,7 @@ const SocialAuth = () => {
           Sign in with google
         </Button>
       </Grid>
-      <Grid
+      {/* <Grid
         size={{
           xs: 12,
           lg: 6,
@@ -82,7 +71,7 @@ const SocialAuth = () => {
         >
           Sign in with Microsoft
         </Button>
-      </Grid>
+      </Grid> */}
     </Grid>
   );
 };

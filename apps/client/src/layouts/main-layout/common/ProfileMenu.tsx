@@ -1,6 +1,6 @@
 'use client';
 
-import { signOut, useSession } from 'next-auth/react';
+
 import { PropsWithChildren, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
@@ -21,10 +21,9 @@ import {
 } from '@mui/material';
 import Menu from '@mui/material/Menu';
 import { useThemeMode } from 'hooks/useThemeMode';
-import { demoUser } from 'lib/next-auth/nextAuthOptions';
 import { useBreakpoints } from 'providers/BreakpointsProvider';
 import { useSettingsContext } from 'providers/SettingsProvider';
-import paths, { authPaths } from 'routes/paths';
+import paths from 'routes/paths';
 import IconifyIcon from 'components/base/IconifyIcon';
 import StatusAvatar from 'components/base/StatusAvatar';
 
@@ -49,9 +48,11 @@ const ProfileMenu = ({ type = 'default' }: ProfileMenuProps) => {
 
   const { isDark, setThemeMode } = useThemeMode();
 
-  const { data } = useSession();
-  // Use demoUser as fallback if no session user
-  const user = useMemo(() => data?.user || demoUser, [data?.user]);
+  const STATIC_USER = useMemo(
+    () => ({ name: 'John Doe', image: '', designation: 'Member' }),
+    []
+  );
+
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -79,9 +80,9 @@ const ProfileMenu = ({ type = 'default' }: ProfileMenuProps) => {
       ]}
     >
       <StatusAvatar
-        alt={user?.name}
+        alt={STATIC_USER.name}
         status="online"
-        src={user?.image || undefined}
+        src={STATIC_USER.image || undefined}
         sx={[
           {
             width: 40,
@@ -98,7 +99,7 @@ const ProfileMenu = ({ type = 'default' }: ProfileMenuProps) => {
     <>
       {type === 'slim' && upSm ? (
         <Button color="neutral" variant="text" size="small" onClick={handleClick}>
-          {user?.name}
+          {STATIC_USER.name}
         </Button>
       ) : (
         menuButton
@@ -131,8 +132,8 @@ const ProfileMenu = ({ type = 'default' }: ProfileMenuProps) => {
         >
           <StatusAvatar
             status="online"
-            alt={user?.name}
-            src={user?.image || undefined}
+            alt={STATIC_USER.name}
+            src={STATIC_USER.image || undefined}
             sx={{ width: 48, height: 48 }}
           />
           <Box>
@@ -143,23 +144,21 @@ const ProfileMenu = ({ type = 'default' }: ProfileMenuProps) => {
                 mb: 0.5,
               }}
             >
-              {user?.name}
+              {STATIC_USER.name}
             </Typography>
-            {user?.designation && (
-              <Typography
-                variant="subtitle2"
-                sx={{
-                  color: 'warning.main',
-                }}
-              >
-                {user?.designation}
-                <IconifyIcon
-                  icon="material-symbols:diamond-rounded"
-                  color="warning.main"
-                  sx={{ verticalAlign: 'text-bottom', ml: 0.5 }}
-                />
-              </Typography>
-            )}
+            <Typography
+              variant="subtitle2"
+              sx={{
+                color: 'warning.main',
+              }}
+            >
+              {STATIC_USER.designation}
+              <IconifyIcon
+                icon="material-symbols:diamond-rounded"
+                color="warning.main"
+                sx={{ verticalAlign: 'text-bottom', ml: 0.5 }}
+              />
+            </Typography>
           </Box>
         </Stack>
         <Divider />
@@ -199,27 +198,14 @@ const ProfileMenu = ({ type = 'default' }: ProfileMenuProps) => {
         </Box>
         <Divider />
         <Box sx={{ py: 1 }}>
-          {data?.user ? (
-            <ProfileMenuItem
-              onClick={async () => {
-                const res = await signOut({
-                  redirect: false,
-                  callbackUrl: paths.defaultLoggedOut,
-                });
-
-                if (res.url) {
-                  router.push(res.url);
-                }
-              }}
-              icon="material-symbols:logout-rounded"
-            >
-              Sign Out
-            </ProfileMenuItem>
-          ) : (
-            <ProfileMenuItem href={authPaths.login} icon="material-symbols:login-rounded">
-              Sign In
-            </ProfileMenuItem>
-          )}
+          <ProfileMenuItem
+            onClick={() => {
+              router.push(paths.defaultLoggedOut);
+            }}
+            icon="material-symbols:logout-rounded"
+          >
+            Sign Out
+          </ProfileMenuItem>
         </Box>
       </Menu>
     </>

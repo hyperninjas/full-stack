@@ -32,14 +32,6 @@ const sitemap: MenuItem[] = [
     icon: 'material-symbols:view-quilt-outline',
     items: [
       {
-        name: 'Starter',
-        key: 'starter',
-        path: paths.starter,
-        pathName: 'starter',
-        icon: 'material-symbols:play-circle-outline-rounded',
-        active: true,
-      },
-      {
         name: 'Error 404',
         key: 'error_404',
         pathName: 'error',

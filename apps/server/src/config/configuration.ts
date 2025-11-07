@@ -1,5 +1,6 @@
 export type Configuration = {
   port: number;
+  env: string;
   cors: {
     origins: string[];
     credentials: boolean;
@@ -11,6 +12,8 @@ export type Configuration = {
     description: string;
     version: string;
     enabled: boolean;
+    outputDir: string;
+    filename: string;
   };
   auth: {
     betterAuthSecret: string;
@@ -41,6 +44,7 @@ export type AuthConfiguration = Configuration['auth'];
 export default () =>
   ({
     port: parseInt(process.env.PORT!, 10) || 4000,
+    env: process.env.NODE_ENV!,
     cors: {
       origins: process.env.CORS_ORIGINS?.split(',') || [],
       credentials: Boolean(process.env.CORS_CREDENTIALS),
@@ -52,6 +56,8 @@ export default () =>
       description: process.env.OPENAPI_DESCRIPTION!,
       version: process.env.OPENAPI_VERSION!,
       enabled: Boolean(process.env.OPENAPI_ENABLED),
+      outputDir: process.env.OPENAPI_OUTPUT_DIR!,
+      filename: process.env.OPENAPI_FILENAME!,
     },
     auth: {
       betterAuthSecret: process.env.BETTER_AUTH_SECRET!,

@@ -1,6 +1,5 @@
 'use client';
 
-import { SignInResponse } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -19,6 +18,7 @@ import {
 import Grid from '@mui/material/Grid';
 import { rootPaths } from 'routes/paths';
 import * as yup from 'yup';
+import { Configuration, HealthApi } from '@/api';
 import PasswordTextField from 'components/common/PasswordTextField';
 import DefaultCredentialAlert from '../common/DefaultCredentialAlert';
 import SocialAuth from './SocialAuth';
@@ -31,22 +31,17 @@ interface LoginFormProps {
   rememberDevice?: boolean;
   defaultCredential?: { email: string; password: string };
 }
-export interface LoginFormValues {
-  email: string;
-  password: string;
-  rememberDevice: boolean;
-}
 
-const schema = yup
-  .object({
-    email: yup
-      .string()
-      .email('Please provide a valid email address.')
-      .required('This field is required'),
-    password: yup.string().required('This field is required'),
-    rememberDevice: yup.boolean().optional().default(false),
-  })
-  .required();
+const schema = yup.object({
+  email: yup
+    .string()
+    .email('Please provide a valid email address.')
+    .required('This field is required'),
+  password: yup.string().required('This field is required'),
+  rememberMe: yup.boolean().required().default(false),
+});
+
+export type LoginFormValues = yup.InferType<typeof schema>;
 
 const LoginForm = ({
   handleLogin,
@@ -68,6 +63,9 @@ const LoginForm = ({
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
     resolver: yupResolver(schema),
+    defaultValues: {
+      rememberMe: false,
+    },
   });
 
   const onSubmit = async (data: LoginFormValues) => {
@@ -195,8 +193,8 @@ const LoginForm = ({
                   }}
                 >
                   {rememberDevice && (
-                    <FormControlLabel {...register('rememberDevice')} 
-                      control={<Checkbox id='rememberDevice' name="rememberDevice" color="primary" size="small" />}
+                    <FormControlLabel
+                      control={<Checkbox color="primary" size="small" {...register('rememberMe')} />}
                       label={
                         <Typography
                           variant="subtitle2"

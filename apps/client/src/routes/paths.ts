@@ -7,7 +7,7 @@ export const rootPaths = {
 };
 
 const paths = {
-  starter: `/${rootPaths.pagesRoot}/starter`,
+
 
   login: `/${rootPaths.authRoot}/${rootPaths.authDefaultRoot}/login`,
   signup: `/${rootPaths.authRoot}/${rootPaths.authDefaultRoot}/signup`,

@@ -6,8 +6,12 @@ injectWorkspacePackages: true
 onlyBuiltDependencies:
   - '@firebase/util'
   - '@nestjs/core'
+  - '@openapitools/openapi-generator-cli'
   - '@prisma/client'
   - '@prisma/engines'
+  - '@scarf/scarf'
+  - core-js-pure
+  - esbuild
   - prisma
   - protobufjs
   - sharp
