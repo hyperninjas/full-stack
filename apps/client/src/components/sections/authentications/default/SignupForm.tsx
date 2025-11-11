@@ -1,6 +1,5 @@
 "use client";
 
-import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Alert,
   Box,
@@ -11,17 +10,18 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import * as yup from "yup";
+import { authClient } from "@/auth";
 import Grid from "@mui/material/Grid";
+import SocialAuth from "./SocialAuth";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import paths, { rootPaths } from "routes/paths";
 import IconifyIcon from "components/base/IconifyIcon";
+import { yupResolver } from "@hookform/resolvers/yup";
 import PasswordTextField from "components/common/PasswordTextField";
 
-import { useForm } from "react-hook-form";
-import paths from "routes/paths";
-import * as yup from "yup";
-import SocialAuth from "./SocialAuth";
-
 interface SignupFormProps {
-  handleSignup: (data: SignupFormValues) => Promise<any | undefined>;
   socialAuth?: boolean;
 }
 
@@ -43,9 +43,10 @@ const schema = yup
   .required();
 
 const SignupForm = ({
-  handleSignup,
   socialAuth = true,
 }: SignupFormProps) => {
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
@@ -56,12 +57,18 @@ const SignupForm = ({
   });
 
   const onSubmit = async (data: SignupFormValues) => {
-    await handleSignup(data).catch((error: any) => {
-      if (error) {
-        console.log(error, "error");
-        setError("root.credential", { type: "manual", message: error.message });
-      }
+    const { data: signupData, error } = await authClient.signUp.email({
+      email: data.email,
+      password: data.password,
+      name: data.name,
     });
+
+    if (signupData) {
+      router.push(rootPaths.root);
+    }
+    if (error) {
+      setError('root.credential', { type: 'manual', message: error.message });
+    }
   };
 
   return (
@@ -197,11 +204,13 @@ const SignupForm = ({
               </Grid>
               <Grid size={12}>
                 <Button
-                  loading={isSubmitting}
                   fullWidth
-                  type='submit'
-                  size='large'
-                  variant='contained'>
+                  type="submit"
+                  size="large"
+                  variant="contained"
+                  loading={isSubmitting}
+                  loadingPosition="start"
+                >
                   Create Account
                 </Button>
               </Grid>
