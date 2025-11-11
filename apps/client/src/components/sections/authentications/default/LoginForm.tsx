@@ -1,8 +1,8 @@
 'use client';
 
 import { useForm } from 'react-hook-form';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Alert,
   Box,
@@ -15,16 +15,15 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import Grid from '@mui/material/Grid';
-import { rootPaths } from 'routes/paths';
 import * as yup from 'yup';
-import { Configuration, HealthApi } from '@/api';
+import { authClient } from '@/auth';
+import Grid from '@mui/material/Grid';
+import SocialAuth from './SocialAuth';
+import { rootPaths } from 'routes/paths';
 import PasswordTextField from 'components/common/PasswordTextField';
 import DefaultCredentialAlert from '../common/DefaultCredentialAlert';
-import SocialAuth from './SocialAuth';
 
 interface LoginFormProps {
-  handleLogin: (data: LoginFormValues) => Promise<any | undefined>;
   signUpLink: string;
   socialAuth?: boolean;
   forgotPasswordLink?: string;
@@ -44,7 +43,6 @@ const schema = yup.object({
 export type LoginFormValues = yup.InferType<typeof schema>;
 
 const LoginForm = ({
-  handleLogin,
   signUpLink,
   forgotPasswordLink,
   socialAuth = true,
@@ -69,13 +67,17 @@ const LoginForm = ({
   });
 
   const onSubmit = async (data: LoginFormValues) => {
-    const res = await handleLogin(data);
-    if (res?.ok) {
-      router.refresh();
+    const { data: loginData, error } = await authClient.signIn.email({
+      email: data.email,
+      password: data.password,
+      rememberMe: data.rememberMe,
+    });
+
+    if (loginData) {
       router.push(callbackUrl ? callbackUrl : rootPaths.root);
     }
-    if (res?.error) {
-      setError('root.credential', { type: 'manual', message: res.error });
+    if (error) {
+      setError('root.credential', { type: 'manual', message: error.message });
     }
   };
 
@@ -222,6 +224,7 @@ const LoginForm = ({
                   size="large"
                   variant="contained"
                   loading={isSubmitting}
+                  loadingPosition="start"
                 >
                   Log in
                 </Button>

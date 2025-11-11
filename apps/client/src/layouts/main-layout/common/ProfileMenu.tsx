@@ -1,6 +1,5 @@
 'use client';
 
-
 import { PropsWithChildren, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
@@ -19,13 +18,14 @@ import {
   SxProps,
   Typography,
 } from '@mui/material';
+import { authPaths } from 'routes/paths';
+import { authClient } from '@/auth';
 import Menu from '@mui/material/Menu';
 import { useThemeMode } from 'hooks/useThemeMode';
-import { useBreakpoints } from 'providers/BreakpointsProvider';
-import { useSettingsContext } from 'providers/SettingsProvider';
-import paths from 'routes/paths';
 import IconifyIcon from 'components/base/IconifyIcon';
 import StatusAvatar from 'components/base/StatusAvatar';
+import { useBreakpoints } from 'providers/BreakpointsProvider';
+import { useSettingsContext } from 'providers/SettingsProvider';
 
 interface ProfileMenuProps {
   type?: 'default' | 'slim';
@@ -95,6 +95,12 @@ const ProfileMenu = ({ type = 'default' }: ProfileMenuProps) => {
       />
     </Button>
   );
+
+  const handleSignout = async () => {
+    await authClient.signOut();
+    router.push(authPaths.login);
+  }
+
   return (
     <>
       {type === 'slim' && upSm ? (
@@ -199,9 +205,7 @@ const ProfileMenu = ({ type = 'default' }: ProfileMenuProps) => {
         <Divider />
         <Box sx={{ py: 1 }}>
           <ProfileMenuItem
-            onClick={() => {
-              router.push(paths.defaultLoggedOut);
-            }}
+            onClick={handleSignout}
             icon="material-symbols:logout-rounded"
           >
             Sign Out

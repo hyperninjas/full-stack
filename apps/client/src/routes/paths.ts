@@ -1,18 +1,16 @@
 export const rootPaths = {
   root: '/',
   pagesRoot: 'pages',
-  authRoot: 'authentication',
+  authRoot: 'auth',
   authDefaultRoot: 'default',
   errorRoot: 'error',
 };
 
 const paths = {
+  login: `/${rootPaths.authRoot}/login`,
+  signup: `/${rootPaths.authRoot}/signup`,
+  forgotPassword: `/${rootPaths.authRoot}/forgot-password`,
 
-
-  login: `/${rootPaths.authRoot}/${rootPaths.authDefaultRoot}/login`,
-  signup: `/${rootPaths.authRoot}/${rootPaths.authDefaultRoot}/signup`,
-  forgotPassword: `/${rootPaths.authRoot}/${rootPaths.authDefaultRoot}/forgot-password`,
-  
   notifications: `/${rootPaths.pagesRoot}/notifications`,
 
   defaultLoggedOut: `/${rootPaths.authRoot}/default/logged-out`,
