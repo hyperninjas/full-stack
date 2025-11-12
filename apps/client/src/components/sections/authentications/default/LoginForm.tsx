@@ -22,6 +22,8 @@ import SocialAuth from './SocialAuth';
 import { rootPaths } from 'routes/paths';
 import PasswordTextField from 'components/common/PasswordTextField';
 import DefaultCredentialAlert from '../common/DefaultCredentialAlert';
+import IconifyIcon from 'components/base/IconifyIcon';
+import { useState, useEffect } from 'react';
 
 interface LoginFormProps {
   signUpLink: string;
@@ -50,6 +52,9 @@ const LoginForm = ({
   defaultCredential,
 }: LoginFormProps) => {
   const router = useRouter();
+  const [passkeyError, setPasskeyError] = useState("");
+  const [isSigningInWithPasskey, setIsSigningInWithPasskey] = useState(false);
+  const [passkeyAvailable, setPasskeyAvailable] = useState(false);
 
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl');
@@ -66,6 +71,21 @@ const LoginForm = ({
     },
   });
 
+  useEffect(() => {
+    const checkPasskeyAvailability = async () => {
+      if (window.PublicKeyCredential) {
+        const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+        setPasskeyAvailable(available);
+
+        if (available) {
+          handlePasskeySignIn(true);
+        }
+      }
+    };
+
+    checkPasskeyAvailability();
+  }, []);
+
   const onSubmit = async (data: LoginFormValues) => {
     const { data: loginData, error } = await authClient.signIn.email({
       email: data.email,
@@ -78,6 +98,31 @@ const LoginForm = ({
     }
     if (error) {
       setError('root.credential', { type: 'manual', message: error.message });
+    }
+  };
+
+  const handlePasskeySignIn = async (autoFill: boolean = false) => {
+    setIsSigningInWithPasskey(true);
+    setPasskeyError("");
+
+    try {
+      const { data, error } = await authClient.signIn.passkey({
+        autoFill,
+      });
+
+      if (error) {
+        if (!autoFill) {
+          setPasskeyError(error.message || "Failed to sign in with passkey");
+        }
+      } else if (data) {
+        router.push(callbackUrl ? callbackUrl : rootPaths.root);
+      }
+    } catch (err) {
+      if (!autoFill) {
+        setPasskeyError("An unexpected error occurred");
+      }
+    } finally {
+      setIsSigningInWithPasskey(false);
     }
   };
 
@@ -126,6 +171,38 @@ const LoginForm = ({
             </Typography>
           </Stack>
         </Grid>
+
+        {passkeyAvailable && (
+          <Grid size={12}>
+            <Button
+              fullWidth
+              size="large"
+              variant="outlined"
+              onClick={() => handlePasskeySignIn(false)}
+              loading={isSigningInWithPasskey}
+              loadingPosition="start"
+              startIcon={<IconifyIcon icon="mdi:fingerprint" />}
+              sx={{
+                borderStyle: 'dashed',
+                py: 1.5,
+              }}
+            >
+              Sign in with Passkey
+            </Button>
+            {passkeyError && (
+              <Alert severity="error" sx={{ mt: 2 }}>
+                {passkeyError}
+              </Alert>
+            )}
+          </Grid>
+        )}
+
+        {passkeyAvailable && (
+          <Grid size={12}>
+            <Divider sx={{ color: 'text.secondary' }}>or</Divider>
+          </Grid>
+        )}
+
         {socialAuth && (
           <>
             <Grid size={12}>
