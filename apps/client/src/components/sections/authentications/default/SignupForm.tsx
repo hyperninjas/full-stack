@@ -43,7 +43,7 @@ const schema = yup
   .required();
 
 const SignupForm = ({
-  socialAuth = true,
+  socialAuth,
 }: SignupFormProps) => {
   const router = useRouter();
 
