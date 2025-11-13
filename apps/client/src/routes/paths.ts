@@ -16,12 +16,15 @@ const paths = {
   defaultLoggedOut: `/${rootPaths.authRoot}/default/logged-out`,
 
   404: `/${rootPaths.errorRoot}/404`,
+
+  twoFactor: `/${rootPaths.authRoot}/2fa`,
 };
 
 export const authPaths = {
   login: paths.login,
   signup: paths.signup,
   forgotPassword: paths.forgotPassword,
+  twoFactorAuth: paths.twoFactor,
 };
 
 export const apiEndpoints = {

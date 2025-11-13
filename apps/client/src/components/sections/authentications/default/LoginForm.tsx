@@ -19,7 +19,7 @@ import * as yup from 'yup';
 import { authClient } from '@/auth';
 import Grid from '@mui/material/Grid';
 import SocialAuth from './SocialAuth';
-import { rootPaths } from 'routes/paths';
+import { authPaths, rootPaths } from 'routes/paths';
 import PasswordTextField from 'components/common/PasswordTextField';
 import DefaultCredentialAlert from '../common/DefaultCredentialAlert';
 
@@ -67,18 +67,28 @@ const LoginForm = ({
   });
 
   const onSubmit = async (data: LoginFormValues) => {
-    const { data: loginData, error } = await authClient.signIn.email({
-      email: data.email,
-      password: data.password,
-      rememberMe: data.rememberMe,
-    });
-
-    if (loginData) {
-      router.push(callbackUrl ? callbackUrl : rootPaths.root);
-    }
-    if (error) {
-      setError('root.credential', { type: 'manual', message: error.message });
-    }
+    await authClient.signIn.email(
+      {
+        email: data.email,
+        password: data.password,
+        rememberMe: data.rememberMe,
+      },
+      {
+        onSuccess(context) {
+          if (context.data.twoFactorRedirect) {
+            router.push(`/two-factor/verify?callbackURL=${encodeURIComponent(authPaths.twoFactorAuth)}`);
+            return;
+          }
+          router.push(rootPaths.root);
+        },
+        onError(context) {
+          setError("root.credential", {
+            type: "manual",
+            message: context.error.message || "Invalid credentials",
+          });
+        },
+      }
+    );
   };
 
   return (

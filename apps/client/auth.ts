@@ -9,7 +9,11 @@ import { organizationClient } from 'better-auth/client/plugins';
 
 export const authClient = createAuthClient({
   plugins: [
-    twoFactorClient(),
+    twoFactorClient({
+      onTwoFactorRedirect() {
+        // Handle the 2FA verification globally
+      },
+    }),
     passkeyClient(),
     multiSessionClient(),
     oneTimeTokenClient(),
