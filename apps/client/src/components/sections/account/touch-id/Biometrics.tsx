@@ -161,17 +161,17 @@ const Biometrics = () => {
             <Typography variant="body2" color="text.secondary">No passkeys found</Typography>
           )}
         </Stack>
-        {passkeys.length < 1 && (
-          <Button
-            variant="soft"
-            color="neutral"
-            fullWidth
-            startIcon={<IconifyIcon icon="material-symbols:add" sx={{ fontSize: 20 }} />}
-            onClick={() => setOpen(true)}
-          >
-            Add Passkey
-          </Button>
-        )}
+        {/* {passkeys.length < 1 && ( */}
+        <Button
+          variant="soft"
+          color="neutral"
+          fullWidth
+          startIcon={<IconifyIcon icon="material-symbols:add" sx={{ fontSize: 20 }} />}
+          onClick={() => setOpen(true)}
+        >
+          Add Passkey
+        </Button>
+        {/* )} */}
       </Stack>
 
       <PasskeySetupDialog

@@ -1,7 +1,7 @@
 import { Divider, Stack } from '@mui/material';
 import AccountTabPanelSection from '../common/AccountTabPanelSection';
 import Biometrics from './Biometrics';
-import TouchIdFeatures from './TouchIdFeatures';
+import TwoFactorFeatures from './TwoFactorFeatures';
 
 const TouchIDTabPanel = () => {
   return (
@@ -18,7 +18,7 @@ const TouchIDTabPanel = () => {
         subtitle="Enable two-factor authentication to add an extra layer of security to your account."
         icon="material-symbols:lock-clock-outline"
       >
-        <TouchIdFeatures />
+        <TwoFactorFeatures />
       </AccountTabPanelSection>
     </Stack>
   );

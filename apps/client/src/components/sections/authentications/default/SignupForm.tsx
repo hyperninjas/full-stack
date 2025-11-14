@@ -4,8 +4,18 @@ import {
   Alert,
   Box,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Divider,
   Link,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormControl,
+  FormLabel,
   Stack,
   TextField,
   Typography,
@@ -20,7 +30,7 @@ import paths, { rootPaths } from "routes/paths";
 import IconifyIcon from "components/base/IconifyIcon";
 import { yupResolver } from "@hookform/resolvers/yup";
 import PasswordTextField from "components/common/PasswordTextField";
-// import PasskeySetupDialog from "components/sections/account/touch-id/PasskeySetupDialog";
+import { useState } from "react";
 
 interface SignupFormProps {
   socialAuth?: boolean;
@@ -47,7 +57,11 @@ const SignupForm = ({
   socialAuth,
 }: SignupFormProps) => {
   const router = useRouter();
-  // const [showPasskeyDialog, setShowPasskeyDialog] = useState(false);
+  const [showPasskeyDialog, setShowPasskeyDialog] = useState(false);
+  const [passkeyName, setPasskeyName] = useState("");
+  const [authenticatorType, setAuthenticatorType] = useState<"platform" | "cross-platform">("platform");
+  const [passkeyError, setPasskeyError] = useState("");
+  const [isAddingPasskey, setIsAddingPasskey] = useState(false);
 
   const {
     register,
@@ -66,22 +80,41 @@ const SignupForm = ({
     });
 
     if (signupData) {
-      // setShowPasskeyDialog(true);
-      router.push(rootPaths.root);
+      setShowPasskeyDialog(true);
     }
     if (error) {
       setError('root.credential', { type: 'manual', message: error.message });
     }
   };
 
-  // const handlePasskeySuccess = () => {
-  //   router.push(rootPaths.root);
-  // };
+  const handleAddPasskey = async () => {
+    setIsAddingPasskey(true);
+    setPasskeyError("");
 
-  // const handleSkipPasskey = () => {
-  //   setShowPasskeyDialog(false);
-  //   router.push(rootPaths.root);
-  // };
+    try {
+      const response = await authClient.passkey.addPasskey({
+        name: passkeyName || "My Device",
+        authenticatorAttachment: authenticatorType,
+      });
+
+      if (response?.error) {
+        setPasskeyError(response.error.message || "Failed to add passkey");
+      } else if (response?.data) {
+        router.push(rootPaths.root);
+      } else {
+        router.push(rootPaths.root);
+      }
+    } catch (err) {
+      setPasskeyError("An unexpected error occurred");
+    } finally {
+      setIsAddingPasskey(false);
+    }
+  };
+
+  const handleSkipPasskey = () => {
+    setShowPasskeyDialog(false);
+    router.push(rootPaths.root);
+  };
 
   return (
     <>
@@ -236,11 +269,90 @@ const SignupForm = ({
         </Link>
       </Stack>
 
-      {/* <PasskeySetupDialog
-        open={showPasskeyDialog}
-        onClose={handleSkipPasskey}
-        onSuccess={handlePasskeySuccess}
-      /> */}
+      <Dialog open={showPasskeyDialog} onClose={handleSkipPasskey} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <IconifyIcon icon="mdi:fingerprint" fontSize={28} />
+            <Typography variant="h6">Set Up Passkey</Typography>
+          </Stack>
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ mb: 3 }}>
+            Enhance your account security with a passkey. Use your fingerprint, face, or device PIN for quick and secure access.
+          </DialogContentText>
+
+          {passkeyError && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {passkeyError}
+            </Alert>
+          )}
+
+          <TextField
+            fullWidth
+            label="Passkey Name"
+            placeholder="e.g., My iPhone, Work Laptop"
+            value={passkeyName}
+            onChange={(e) => setPasskeyName(e.target.value)}
+            sx={{ mb: 3 }}
+            variant="outlined"
+          />
+
+          <FormControl component="fieldset">
+            <FormLabel component="legend" sx={{ mb: 1 }}>
+              Authentication Method
+            </FormLabel>
+            <RadioGroup
+              value={authenticatorType}
+              onChange={(e) => setAuthenticatorType(e.target.value as "platform" | "cross-platform")}
+            >
+              <FormControlLabel
+                value="platform"
+                control={<Radio />}
+                label={
+                  <Stack>
+                    <Typography variant="body1" sx={{ mr: 0.5 }}>
+                      <IconifyIcon icon="mdi:cellphone-key" sx={{ verticalAlign: "middle", mr: 1 }} />
+                      This Device
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      (Use biometrics or PIN on this device)
+                    </Typography>
+                  </Stack>
+                }
+              />
+              <FormControlLabel
+                value="cross-platform"
+                control={<Radio />}
+                label={
+                  <Stack>
+                    <Typography variant="body1" sx={{ mr: 0.5 }}>
+                      <IconifyIcon icon="mdi:usb-flash-drive" sx={{ verticalAlign: "middle", mr: 1 }} />
+                      Security Key
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      (Use a USB security key or another device)
+                    </Typography>
+                  </Stack>
+                }
+              />
+            </RadioGroup>
+          </FormControl>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={handleSkipPasskey} color="inherit">
+            Skip for Now
+          </Button>
+          <Button
+            onClick={handleAddPasskey}
+            variant="contained"
+            loading={isAddingPasskey}
+            loadingPosition="start"
+            startIcon={<IconifyIcon icon="mdi:shield-check" />}
+          >
+            Set Up Passkey
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };
