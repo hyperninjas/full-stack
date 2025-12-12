@@ -8,23 +8,32 @@ import {
   organization,
   twoFactor,
 } from 'better-auth/plugins';
-import { passkey } from 'better-auth/plugins/passkey';
-// import { stripe } from '@better-auth/stripe';
-// import Stripe from 'stripe';
-// const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-//   apiVersion: '2025-10-29.clover', // Latest API version as of Stripe SDK v19
-// });
+import { passkey } from '@better-auth/passkey';
+import { stripe } from '@better-auth/stripe';
+import Stripe from 'stripe';
+
 import { prismaAdapter } from 'better-auth/adapters/prisma';
-import { prisma } from './src/prisma/prisma.service';
+
+import prisma from '../prisma/prisma.service';
 
 type AuthInstance = ReturnType<typeof betterAuth>;
+
+const stripeClient = new Stripe('sk_skfl', {
+  apiVersion: '2025-11-17.clover', // Latest API version as of Stripe SDK v19
+});
 
 export const auth: AuthInstance = betterAuth({
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
     transaction: true,
-    // debugLogs: true,
+    debugLogs: true,
   }),
+  experimental: {
+    joins: true,
+  },
+  logger: {
+    level: 'error',
+  },
   databaseHooks: {
     session: {
       create: {
@@ -43,11 +52,11 @@ export const auth: AuthInstance = betterAuth({
   // npx @better-auth/cli@latest generate
   appName: 'Server',
   plugins: [
-    // stripe({
-    //   stripeClient,
-    //   stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
-    //   createCustomerOnSignUp: true,
-    // }),
+    stripe({
+      stripeClient,
+      stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
+      createCustomerOnSignUp: true,
+    }),
     openAPI(),
     multiSession(),
     oneTimeToken(),

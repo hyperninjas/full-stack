@@ -7,22 +7,22 @@ import {
   HealthIndicatorResult,
 } from '@nestjs/terminus';
 import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
-
-import { PrismaClient } from '../../generated/client';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Controller('health')
 export class HealthController {
-  private readonly prisma = new PrismaClient();
-
   constructor(
     private health: HealthCheckService,
     private http: HttpHealthIndicator,
+    private prisma: PrismaService,
   ) {}
 
   @Get()
   @AllowAnonymous()
   @HealthCheck()
-  check() {
+  async check() {
+    const x = await this.prisma.user.findMany();
+    console.log(x);
     return this.health.check([
       () =>
         this.http.pingCheck(

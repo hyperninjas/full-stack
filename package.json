@@ -7,7 +7,7 @@
     "dev:client": "pnpm --filter client dev",
     "prebuild": "pnpm -r --filter server run prisma:generate",
     "dev:server": "pnpm --filter server start:dev",
-    "build:client": "pnpm --filter client build", 
+    "build:client": "pnpm --filter client build",
     "build:server": "pnpm --filter server build",
     "start:client": "pnpm --filter client start",
     "start:server": "pnpm --filter server start",
@@ -28,9 +28,9 @@
   "license": "ISC",
   "packageManager": "pnpm@10.16.1",
   "devDependencies": {
-    "@changesets/cli": "^2.29.7",
-    "@commitlint/cli": "^20.1.0",
-    "@commitlint/config-conventional": "^20.0.0",
+    "@changesets/cli": "^2.29.8",
+    "@commitlint/cli": "^20.2.0",
+    "@commitlint/config-conventional": "^20.2.0",
     "husky": "^9.1.7"
   }
 }

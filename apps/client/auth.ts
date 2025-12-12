@@ -1,6 +1,6 @@
 import { createAuthClient } from 'better-auth/react';
+import { passkeyClient } from '@better-auth/passkey/client';
 import { twoFactorClient } from 'better-auth/client/plugins';
-import { passkeyClient } from 'better-auth/client/plugins';
 import { multiSessionClient } from 'better-auth/client/plugins';
 import { oneTimeTokenClient } from 'better-auth/client/plugins';
 import { lastLoginMethodClient } from 'better-auth/client/plugins';

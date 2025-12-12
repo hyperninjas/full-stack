@@ -1,23 +1,27 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
   provider     = "prisma-client"
-  output       = "../generated"
+  output       = "../src/generated"
   moduleFormat = "cjs"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
-  id               String       @id @default(cuid())
-  email            String       @unique
+  id               String       @id
   name             String
+  email            String
   emailVerified    Boolean      @default(false)
   image            String?
   createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @default(now()) @updatedAt
+  updatedAt        DateTime     @updatedAt
   role             String?
   banned           Boolean?     @default(false)
   banReason        String?
@@ -25,13 +29,15 @@ model User {
   twoFactorEnabled Boolean?     @default(false)
   sessions         Session[]
   accounts         Account[]
+  teammembers      TeamMember[]
   members          Member[]
   invitations      Invitation[]
   twofactors       TwoFactor[]
+
+  stripeCustomerId String?
   passkeys         Passkey[]
 
-  teammembers TeamMember[]
-
+  @@unique([email])
   @@map("user")
 }
 
@@ -47,10 +53,10 @@ model Session {
   user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   impersonatedBy       String?
   activeOrganizationId String?
-
-  activeTeamId String?
+  activeTeamId         String?
 
   @@unique([token])
+  @@index([userId])
   @@map("session")
 }
 
@@ -70,6 +76,7 @@ model Account {
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
+  @@index([userId])
   @@map("account")
 }
 
@@ -79,8 +86,9 @@ model Verification {
   value      String
   expiresAt  DateTime
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now()) @updatedAt
+  updatedAt  DateTime @updatedAt
 
+  @@index([identifier])
   @@map("verification")
 }
 
@@ -91,13 +99,38 @@ model Organization {
   logo        String?
   createdAt   DateTime
   metadata    String?
+  teams       Team[]
   members     Member[]
   invitations Invitation[]
 
-  teams Team[]
-
   @@unique([slug])
   @@map("organization")
+}
+
+model Team {
+  id             String       @id
+  name           String
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime
+  updatedAt      DateTime?    @updatedAt
+  teammembers    TeamMember[]
+
+  @@index([organizationId])
+  @@map("team")
+}
+
+model TeamMember {
+  id        String    @id
+  teamId    String
+  team      Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime?
+
+  @@index([teamId])
+  @@index([userId])
+  @@map("teamMember")
 }
 
 model Member {
@@ -106,9 +139,11 @@ model Member {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   userId         String
   user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role           String
+  role           String       @default("member")
   createdAt      DateTime
 
+  @@index([organizationId])
+  @@index([userId])
   @@map("member")
 }
 
@@ -118,13 +153,15 @@ model Invitation {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   email          String
   role           String?
-  status         String
+  teamId         String?
+  status         String       @default("pending")
   expiresAt      DateTime
+  createdAt      DateTime     @default(now())
   inviterId      String
   user           User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
 
-  teamId String?
-
+  @@index([organizationId])
+  @@index([email])
   @@map("invitation")
 }
 
@@ -135,6 +172,8 @@ model TwoFactor {
   userId      String
   user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([secret])
+  @@index([userId])
   @@map("twoFactor")
 }
 
@@ -152,28 +191,7 @@ model Passkey {
   createdAt    DateTime?
   aaguid       String?
 
+  @@index([userId])
+  @@index([credentialID])
   @@map("passkey")
-}
-
-model Team {
-  id             String       @id
-  name           String
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  createdAt      DateTime
-  updatedAt      DateTime?    @updatedAt
-  teammembers    TeamMember[]
-
-  @@map("team")
-}
-
-model TeamMember {
-  id        String    @id
-  teamId    String
-  team      Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime?
-
-  @@map("teamMember")
 }

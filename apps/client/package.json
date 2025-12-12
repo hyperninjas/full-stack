@@ -12,6 +12,7 @@
     "openapi": "pnpm openapi:clean && pnpm openapi:gen"
   },
   "dependencies": {
+    "@better-auth/passkey": "^1.4.6",
     "@emotion/cache": "^11.14.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
@@ -37,7 +38,7 @@
     "@mui/x-data-grid": "^8.14.1",
     "@mui/x-date-pickers": "^8.14.1",
     "axios": "^1.12.2",
-    "better-auth": "^1.3.34",
+    "better-auth": "^1.4.6",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.18",
     "gsap": "^3.13.0",
