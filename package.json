@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "dev:client": "pnpm --filter client dev",
+    "dev:m-client": "pnpm --filter client-mantine dev",
     "prebuild": "pnpm -r --filter server run prisma:generate",
     "dev:server": "pnpm --filter server start:dev",
     "build:client": "pnpm --filter client build",
@@ -26,7 +27,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.16.1",
+  "packageManager": "pnpm@10.25.0",
   "devDependencies": {
     "@changesets/cli": "^2.29.8",
     "@commitlint/cli": "^20.2.0",
