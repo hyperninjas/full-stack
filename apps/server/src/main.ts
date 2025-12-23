@@ -59,10 +59,13 @@ async function bootstrap() {
       },
     }),
   );
+  console.log(corsConfig);
+  
   app.enableCors({
     origin: corsConfig.origins,
     methods: corsConfig.methods,
     allowedHeaders: corsConfig.allowedHeaders,
+    credentials: true
   });
   app.useGlobalPipes(
     new ValidationPipe({
@@ -91,27 +94,24 @@ async function bootstrap() {
     SwaggerModule.setup('api', app, documentFactory);
 
     // Generate and save OpenAPI JSON
-    const document = documentFactory();
-    const jsonDoc = JSON.stringify(document, null, 2);
-    // const outputDir = openapiConfig.outputDir;
-    const filename = openapiConfig.filename;
-    // Resolve paths from monorepo root (apps/server/dist -> ../../../)
-    const repoRoot = path.resolve(__dirname, '../../../client');
-    // const absOutDir = path.resolve(repoRoot, outputDir);
-    // mkdirSync(absOutDir, { recursive: true });
-    // const outFile = path.join(absOutDir, filename);
-    // writeFileSync(outFile, jsonDoc, 'utf8');
-    // Logger.debug(`OpenAPI JSON written to ${outFile}`);
-
-    // Also write a copy into the client folder
-    const clientOutDir = path.resolve(repoRoot, 'apps/client/openapi');
-    mkdirSync(clientOutDir, { recursive: true });
-    const clientOutFile = path.join(clientOutDir, filename);
-    writeFileSync(clientOutFile, jsonDoc, 'utf8');
-    Logger.debug(`OpenAPI JSON copied to ${clientOutFile}`);
+    try {
+      const document = documentFactory();
+      const jsonDoc = JSON.stringify(document, null, 2);
+      const filename = openapiConfig.filename;
+      
+      // Resolve path from dist folder to client openapi directory
+      // apps/server/dist -> ../../client/openapi
+      const clientOutDir = path.resolve(__dirname, '../../client/openapi');
+      mkdirSync(clientOutDir, { recursive: true });
+      const clientOutFile = path.join(clientOutDir, filename);
+      writeFileSync(clientOutFile, jsonDoc, 'utf8');
+      Logger.debug(`OpenAPI JSON written to ${clientOutFile}`);
+    } catch (error) {
+      Logger.error('Failed to generate OpenAPI JSON', error);
+    }
   }
 
-  // app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api');
   await app.listen(port);
   Logger.debug(`Server started on http://localhost:${port}`);
   Logger.debug(

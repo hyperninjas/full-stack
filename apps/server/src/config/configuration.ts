@@ -41,15 +41,28 @@ export type CorsConfiguration = Configuration['cors'];
 export type OpenapiConfiguration = Configuration['openapi'];
 export type AuthConfiguration = Configuration['auth'];
 
-export default () =>
-  ({
+export default () => {
+  const rawOrigins = process.env.CORS_ORIGINS?.split(',') || [];
+  const rawHeaders = process.env.CORS_ALLOWED_HEADERS?.split(',') || [];
+  const credentials = Boolean(process.env.CORS_CREDENTIALS);
+
+  // Sanitize wildcards if credentials are true (browser requirement)
+  const origins = (credentials && rawOrigins.includes('*'))
+    ? ['http://localhost:3000', 'http://localhost:3001']
+    : rawOrigins;
+
+  const allowedHeaders = (credentials && rawHeaders.includes('*'))
+    ? ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With', 'sentry-trace', 'baggage']
+    : rawHeaders;
+
+  return {
     port: parseInt(process.env.PORT!, 10) || 4000,
     env: process.env.NODE_ENV!,
     cors: {
-      origins: process.env.CORS_ORIGINS?.split(',') || [],
-      credentials: Boolean(process.env.CORS_CREDENTIALS),
+      origins,
+      credentials,
       methods: process.env.CORS_METHODS?.split(',') || [],
-      allowedHeaders: process.env.CORS_ALLOWED_HEADERS?.split(',') || [],
+      allowedHeaders,
     },
     openapi: {
       title: process.env.OPENAPI_TITLE!,
@@ -78,4 +91,5 @@ export default () =>
       password: process.env.DATABASE_PASSWORD!,
       database: process.env.DATABASE_NAME!,
     },
-  }) satisfies Configuration;
+  };
+};

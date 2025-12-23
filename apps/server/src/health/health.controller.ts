@@ -21,8 +21,6 @@ export class HealthController {
   @AllowAnonymous()
   @HealthCheck()
   async check() {
-    const x = await this.prisma.user.findMany();
-    console.log(x);
     return this.health.check([
       () =>
         this.http.pingCheck(

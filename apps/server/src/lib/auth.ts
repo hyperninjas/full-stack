@@ -18,15 +18,29 @@ import prisma from '../prisma/prisma.service';
 
 type AuthInstance = ReturnType<typeof betterAuth>;
 
-const stripeClient = new Stripe('sk_skfl', {
+// Load Stripe API key from environment variables
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+if (!stripeSecretKey) {
+  throw new Error('STRIPE_SECRET_KEY environment variable is required');
+}
+
+const stripeClient = new Stripe(stripeSecretKey, {
   apiVersion: '2025-11-17.clover', // Latest API version as of Stripe SDK v19
 });
+
+// Load Google OAuth credentials from environment variables
+const googleClientId = process.env.GOOGLE_CLIENT_ID;
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
+
+if (!googleClientId || !googleClientSecret) {
+  throw new Error('GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables are required');
+}
 
 export const auth: AuthInstance = betterAuth({
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
     transaction: true,
-    debugLogs: true,
+    // debugLogs: true,
   }),
   experimental: {
     joins: true,
@@ -72,9 +86,8 @@ export const auth: AuthInstance = betterAuth({
   trustedOrigins: ['http://localhost:3001', 'http://localhost:4000'],
   socialProviders: {
     google: {
-      clientId:
-        '731592961565-k651r7qts814nhrqltufb89bnmtk5o0n.apps.googleusercontent.com',
-      clientSecret: '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',
+      clientId: googleClientId,
+      clientSecret: googleClientSecret,
       scope: ['https://www.googleapis.com/auth/drive.file'],
       accessType: 'offline',
       prompt: 'select_account consent',
