@@ -1,8 +1,3 @@
-/**
- * API Client Examples Page
- *
- * Comprehensive examples demonstrating all features of the API client
- */
 import { Suspense } from 'react';
 import AuthenticationExample from '@/components/examples/AuthenticationExample';
 import BasicUsageExample from '@/components/examples/BasicUsageExample';
@@ -11,6 +6,13 @@ import ErrorHandlingExample from '@/components/examples/ErrorHandlingExample';
 import SWRIntegrationExample from '@/components/examples/SWRIntegrationExample';
 import ServerActionExample from '@/components/examples/ServerActionExample';
 import ServerComponentExample from '@/components/examples/ServerComponentExample';
+
+/**
+ * API Client Examples Page
+ *
+ * Comprehensive examples demonstrating all features of the API client
+ */
+export const dynamic = 'force-dynamic';
 
 export default function APIClientExamplesPage() {
   return (
