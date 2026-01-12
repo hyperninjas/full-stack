@@ -21,10 +21,12 @@ export const clampLimit = (limit?: number) => {
 
 /**
  * Type representing a Prisma where condition that supports AND/OR.
+ * Using 'unknown' is safe here as it requires type guards before usage, unlike 'any'.
  */
 export type GenericPrismaWhere = {
   AND?: GenericPrismaWhere | GenericPrismaWhere[];
   OR?: GenericPrismaWhere[];
+  NOT?: GenericPrismaWhere | GenericPrismaWhere[];
   [key: string]: unknown;
 };
 
@@ -61,15 +63,18 @@ export const applySearch = <
 
 /**
  * Builds a Prisma orderBy object from a SortInput.
+ * Returns Partial<TOrderBy> to be safer, or compatible object.
  */
 export const buildOrderBy = <
   TField extends string,
-  TOrderBy extends Record<string, any>,
+  TOrderBy extends Record<string, unknown>,
 >(
   sort: SortInput<TField> | undefined,
   fallback: TOrderBy,
 ): TOrderBy => {
   if (!sort) return fallback;
   const { field, direction = 'asc' } = sort;
-  return { [field]: direction } as TOrderBy;
+  // We use a safe assertion here because we know the structure fits the Prisma requirement
+  // even if TypeScript cannot infer usage of the generic TOrderBy perfectly for the specific field key.
+  return { [field]: direction } as unknown as TOrderBy;
 };

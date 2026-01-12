@@ -12,6 +12,7 @@ import {
   OpenapiConfiguration,
 } from './config/configuration';
 import { PrismaClientExceptionFilter } from './common/filters/prisma-exception.filter';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { HttpAdapterHost } from '@nestjs/core';
 
 async function bootstrap() {
@@ -82,7 +83,10 @@ async function bootstrap() {
   );
 
   const { httpAdapter } = app.get(HttpAdapterHost);
-  app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
+  app.useGlobalFilters(
+    new PrismaClientExceptionFilter(httpAdapter),
+    new AllExceptionsFilter(),
+  );
 
   app.enableVersioning({
     type: VersioningType.URI,
