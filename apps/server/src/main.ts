@@ -11,6 +11,8 @@ import {
   CorsConfiguration,
   OpenapiConfiguration,
 } from './config/configuration';
+import { PrismaClientExceptionFilter } from './common/filters/prisma-exception.filter';
+import { HttpAdapterHost } from '@nestjs/core';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -81,6 +83,9 @@ async function bootstrap() {
       stopAtFirstError: false,
     }),
   );
+
+  const { httpAdapter } = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
 
   app.enableVersioning({
     type: VersioningType.URI,

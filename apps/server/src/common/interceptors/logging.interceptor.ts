@@ -1,71 +1,32 @@
 import {
-  CallHandler,
-  ExecutionContext,
   Injectable,
-  Logger,
   NestInterceptor,
+  ExecutionContext,
+  CallHandler,
+  Logger,
 } from '@nestjs/common';
-import { Request } from 'express';
-import { Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { Request, Response } from 'express';
 
-/**
- * Extended Request interface with requestId
- */
-interface RequestWithId extends Request {
-  requestId?: string;
-  user?: {
-    id?: string;
-  };
-}
-
-/**
- * Logging Interceptor
- * Logs all incoming requests and outgoing responses
- * Includes timing information and slow request detection
- */
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
-  private readonly logger = new Logger(LoggingInterceptor.name);
-  private readonly SLOW_REQUEST_THRESHOLD = 1000; // 1 second
+  private readonly logger = new Logger('HTTP');
 
-  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest<Request>();
-    const requestId = (request as RequestWithId).requestId || 'unknown';
-    const { method, url, ip } = request;
+    const { method, url } = request;
     const userAgent = request.get('user-agent') || '';
-    const userId = (request as RequestWithId).user?.id || 'anonymous';
-
-    const startTime = Date.now();
-
-    // Log incoming request
-    this.logger.log(
-      `[${requestId}] ${method} ${url} - ${ip} - ${userAgent} - User: ${userId}`,
-    );
+    const now = Date.now();
 
     return next.handle().pipe(
       tap(() => {
-        const duration = Date.now() - startTime;
-        const logMessage = `[${requestId}] ${method} ${url} - ${duration}ms`;
-
-        if (duration > this.SLOW_REQUEST_THRESHOLD) {
-          this.logger.warn(`${logMessage} - SLOW REQUEST`);
-        } else {
-          this.logger.log(logMessage);
-        }
-      }),
-      catchError((error: unknown) => {
-        const duration = Date.now() - startTime;
-        const errorMessage =
-          error instanceof Error ? error.message : String(error);
-        const errorStack = error instanceof Error ? error.stack : undefined;
-
-        this.logger.error(
-          `[${requestId}] ${method} ${url} - ${duration}ms - ERROR: ${errorMessage}`,
-          errorStack,
+        const response = context.switchToHttp().getResponse<Response>();
+        const statusCode = response.statusCode;
+        const delay = Date.now() - now;
+        this.logger.log(
+          `${method} ${url} ${statusCode} - ${delay}ms [${userAgent}]`,
         );
-
-        return throwError(() => error);
       }),
     );
   }

@@ -195,3 +195,13 @@ model Passkey {
   @@index([credentialID])
   @@map("passkey")
 }
+
+model DummyModel {
+  id String @id @default(uuid())
+
+  name        String
+  description String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

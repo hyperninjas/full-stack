@@ -6,6 +6,7 @@
   "scripts": {
     "dev:client": "pnpm --filter client dev",
     "prebuild": "pnpm -r --filter server run prisma:generate",
+    "migrate": "pnpm -r --filter server run prisma:migrate",
     "dev:server": "pnpm --filter server start:dev",
     "build:client": "pnpm --filter client build",
     "build:server": "pnpm --filter server build",
