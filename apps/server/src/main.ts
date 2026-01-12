@@ -1,18 +1,17 @@
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import compression from 'compression';
 import { mkdirSync, writeFileSync } from 'fs';
 import helmet from 'helmet';
 import path from 'path';
 import { AppModule } from './app.module';
+import { PrismaClientExceptionFilter } from './common/filters/prisma-exception.filter';
 import {
   CorsConfiguration,
   OpenapiConfiguration,
 } from './config/configuration';
-import { PrismaClientExceptionFilter } from './common/filters/prisma-exception.filter';
-import { HttpAdapterHost } from '@nestjs/core';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -85,6 +84,8 @@ async function bootstrap() {
   );
 
   const { httpAdapter } = app.get(HttpAdapterHost);
+  // PrismaClientExceptionFilter is registered here for Prisma-specific errors
+  // AllExceptionsFilter is registered in app.module.ts as APP_FILTER for all other errors
   app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
 
   app.enableVersioning({

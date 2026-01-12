@@ -1,13 +1,29 @@
-import { ArgumentsHost, Catch, HttpStatus } from '@nestjs/common';
+import { ArgumentsHost, Catch, HttpStatus, Logger } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
 import { Prisma } from '@/generated/client';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
+/**
+ * Extended Request interface with requestId
+ */
+interface RequestWithId extends Request {
+  requestId?: string;
+}
+
+/**
+ * Prisma Client Exception Filter
+ * Handles Prisma-specific database errors and converts them to HTTP responses
+ * This filter runs before AllExceptionsFilter to catch Prisma errors specifically
+ */
 @Catch(Prisma.PrismaClientKnownRequestError)
 export class PrismaClientExceptionFilter extends BaseExceptionFilter {
+  private readonly logger = new Logger(PrismaClientExceptionFilter.name);
+
   catch(exception: Prisma.PrismaClientKnownRequestError, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
+    const request = ctx.getRequest<Request>();
+    const requestId = (request as RequestWithId).requestId || 'unknown';
 
     let status: HttpStatus;
     let message: string;
@@ -56,10 +72,22 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
         return;
     }
 
+    // Log Prisma errors with context
+    this.logger.warn(
+      `[${requestId}] Prisma error ${exception.code}: ${message} - ${request.method} ${request.url}`,
+    );
+
+    // Return standardized error response format matching AllExceptionsFilter
     response.status(status).json({
-      status,
-      message,
-      error,
+      success: false,
+      error: {
+        statusCode: status,
+        message,
+        error,
+        requestId,
+        timestamp: new Date().toISOString(),
+        path: request.url,
+      },
     });
   }
 
