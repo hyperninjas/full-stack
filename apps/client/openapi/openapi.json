@@ -168,6 +168,410 @@
           "Health"
         ]
       }
+    },
+    "/dummy": {
+      "post": {
+        "operationId": "DummyController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDummyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/DummyDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DummyDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Create a new dummy",
+        "tags": [
+          "Dummy"
+        ]
+      },
+      "get": {
+        "operationId": "DummyController_findAll",
+        "parameters": [
+          {
+            "name": "searchTerm",
+            "required": false,
+            "in": "query",
+            "description": "General search term across fields",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "minimum": 1,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sortField",
+            "required": false,
+            "in": "query",
+            "description": "Field to sort by",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "id",
+                "name",
+                "description",
+                "createdAt",
+                "updatedAt"
+              ]
+            }
+          },
+          {
+            "name": "sortDirection",
+            "required": false,
+            "in": "query",
+            "description": "Sort direction",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "name",
+            "required": false,
+            "in": "query",
+            "description": "Filter by name",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "description",
+            "required": false,
+            "in": "query",
+            "description": "Filter by description",
+            "schema": {
+              "nullable": true,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ResponsePaginationDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/DummyDto"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get all dummies (offset pagination)",
+        "tags": [
+          "Dummy"
+        ]
+      }
+    },
+    "/dummy/cursor": {
+      "get": {
+        "operationId": "DummyController_findAllCursor",
+        "parameters": [
+          {
+            "name": "searchTerm",
+            "required": false,
+            "in": "query",
+            "description": "General search term across fields",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursor",
+            "required": false,
+            "in": "query",
+            "description": "Cursor for pagination",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Number of items to retrieve",
+            "schema": {
+              "minimum": 1,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sortField",
+            "required": false,
+            "in": "query",
+            "description": "Field to sort by",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "id",
+                "name",
+                "description",
+                "createdAt",
+                "updatedAt"
+              ]
+            }
+          },
+          {
+            "name": "sortDirection",
+            "required": false,
+            "in": "query",
+            "description": "Sort direction",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "name",
+            "required": false,
+            "in": "query",
+            "description": "Filter by name",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "description",
+            "required": false,
+            "in": "query",
+            "description": "Filter by description",
+            "schema": {
+              "nullable": true,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ResponseCursorPaginationDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/DummyDto"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get all dummies (cursor pagination)",
+        "tags": [
+          "Dummy"
+        ]
+      }
+    },
+    "/dummy/{id}": {
+      "get": {
+        "operationId": "DummyController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Dummy ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/DummyDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Dummy not found"
+          }
+        },
+        "summary": "Get dummy by id",
+        "tags": [
+          "Dummy"
+        ]
+      },
+      "put": {
+        "operationId": "DummyController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Dummy ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDummyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/DummyDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Dummy not found"
+          }
+        },
+        "summary": "Update a dummy",
+        "tags": [
+          "Dummy"
+        ]
+      },
+      "delete": {
+        "operationId": "DummyController_delete",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Dummy ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Dummy deleted successfully"
+          }
+        },
+        "summary": "Delete a dummy",
+        "tags": [
+          "Dummy"
+        ]
+      }
     }
   },
   "info": {
@@ -179,6 +583,299 @@
   "tags": [],
   "servers": [],
   "components": {
-    "schemas": {}
+    "schemas": {
+      "ResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Response data"
+          },
+          "message": {
+            "type": "string",
+            "description": "Response message"
+          },
+          "status": {
+            "type": "number",
+            "description": "HTTP status code"
+          }
+        },
+        "required": [
+          "data",
+          "message",
+          "status"
+        ]
+      },
+      "UpdateDummyDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier of the dummy"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the dummy",
+            "minLength": 3
+          },
+          "description": {
+            "type": "string",
+            "description": "The description of the dummy",
+            "minLength": 15,
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Creation timestamp"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Last update timestamp"
+          }
+        }
+      },
+      "CreateDummyDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier of the dummy"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the dummy",
+            "minLength": 3
+          },
+          "description": {
+            "type": "string",
+            "description": "The description of the dummy",
+            "minLength": 15,
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Creation timestamp"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Last update timestamp"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "DummyCursorQueryDto": {
+        "type": "object",
+        "properties": {
+          "searchTerm": {
+            "type": "string",
+            "description": "General search term across fields"
+          },
+          "cursor": {
+            "type": "string",
+            "description": "Cursor for pagination"
+          },
+          "limit": {
+            "type": "number",
+            "description": "Number of items to retrieve",
+            "minimum": 1,
+            "default": 20
+          },
+          "sortField": {
+            "type": "string",
+            "description": "Field to sort by",
+            "enum": [
+              "id",
+              "name",
+              "description",
+              "createdAt",
+              "updatedAt"
+            ]
+          },
+          "sortDirection": {
+            "type": "string",
+            "description": "Sort direction",
+            "enum": [
+              "asc",
+              "desc"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "description": "Filter by name"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Filter by description"
+          }
+        }
+      },
+      "DummyOffsetQueryDto": {
+        "type": "object",
+        "properties": {
+          "searchTerm": {
+            "type": "string",
+            "description": "General search term across fields"
+          },
+          "page": {
+            "type": "number",
+            "description": "Page number",
+            "minimum": 1,
+            "default": 1
+          },
+          "limit": {
+            "type": "number",
+            "description": "Number of items per page",
+            "minimum": 1,
+            "default": 20
+          },
+          "sortField": {
+            "type": "string",
+            "description": "Field to sort by",
+            "enum": [
+              "id",
+              "name",
+              "description",
+              "createdAt",
+              "updatedAt"
+            ]
+          },
+          "sortDirection": {
+            "type": "string",
+            "description": "Sort direction",
+            "enum": [
+              "asc",
+              "desc"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "description": "Filter by name"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Filter by description"
+          }
+        }
+      },
+      "DummyDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "The description"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Creation timestamp"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Last update timestamp"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "number",
+            "description": "Total number of items"
+          },
+          "page": {
+            "type": "number",
+            "description": "Current page number"
+          },
+          "limit": {
+            "type": "number",
+            "description": "Items per page"
+          }
+        },
+        "required": [
+          "total",
+          "page",
+          "limit"
+        ]
+      },
+      "ResponsePaginationDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Response data"
+          },
+          "message": {
+            "type": "string",
+            "description": "Response message"
+          },
+          "status": {
+            "type": "number",
+            "description": "HTTP status code"
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          }
+        },
+        "required": [
+          "data",
+          "message",
+          "status",
+          "pagination"
+        ]
+      },
+      "ResponseCursorPaginationDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Response data"
+          },
+          "message": {
+            "type": "string",
+            "description": "Response message"
+          },
+          "status": {
+            "type": "number",
+            "description": "HTTP status code"
+          },
+          "nextCursor": {
+            "type": "string",
+            "nullable": true,
+            "description": "Cursor for the next page"
+          }
+        },
+        "required": [
+          "data",
+          "message",
+          "status",
+          "nextCursor"
+        ]
+      }
+    }
   }
 }

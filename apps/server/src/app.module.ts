@@ -10,7 +10,10 @@ import { TerminusModule } from '@nestjs/terminus';
 import { HealthController } from './health/health.controller';
 import { AuthModule } from '@thallesp/nestjs-better-auth';
 import { auth } from './lib/auth';
-import { PrismaService } from './prisma/prisma.service';
+import { PrismaModule } from './prisma/prisma.module';
+import { DummyModule } from './dummy/dummy.module';
+import { ResponseInterceptor } from './common/interceptors/response.interceptor';
+import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 
 @Module({
   imports: [
@@ -22,11 +25,13 @@ import { PrismaService } from './prisma/prisma.service';
     }),
     AuthModule.forRoot({
       auth,
+
       middleware: (req, _res, next) => {
         req.url = req.originalUrl;
         req.baseUrl = '';
         next();
       },
+      disableGlobalAuthGuard: true,
     }),
     CacheModule.register({
       ttl: 60 * 60 * 1000,
@@ -47,12 +52,21 @@ import { PrismaService } from './prisma/prisma.service';
       ],
     }),
     TerminusModule,
+    PrismaModule,
+    DummyModule,
   ],
   providers: [
-    PrismaService,
     {
       provide: APP_INTERCEPTOR,
       useClass: CacheInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ResponseInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
     },
     {
       provide: APP_GUARD,
