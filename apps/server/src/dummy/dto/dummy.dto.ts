@@ -8,7 +8,11 @@ export class DummyDto implements DummyModel {
   @ApiProperty({ description: 'The name' })
   name: string;
 
-  @ApiProperty({ description: 'The description', nullable: true, type: 'string' })
+  @ApiProperty({
+    description: 'The description',
+    nullable: true,
+    type: 'string',
+  })
   description: string | null;
 
   @ApiProperty({ description: 'Creation timestamp' })

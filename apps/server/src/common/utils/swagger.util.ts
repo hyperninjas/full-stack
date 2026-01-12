@@ -1,8 +1,14 @@
 import { applyDecorators, Type } from '@nestjs/common';
 import { ApiExtraModels, ApiOkResponse, getSchemaPath } from '@nestjs/swagger';
-import { ResponseDto, ResponsePaginationDto, ResponseCursorPaginationDto } from '../response.dto';
+import {
+  ResponseDto,
+  ResponsePaginationDto,
+  ResponseCursorPaginationDto,
+} from '../response.dto';
 
-export const ApiOkResponseWrapped = <TModel extends Type<any>>(model: TModel) => {
+export const ApiOkResponseWrapped = <TModel extends Type<any>>(
+  model: TModel,
+) => {
   return applyDecorators(
     ApiExtraModels(ResponseDto, model),
     ApiOkResponse({
@@ -20,7 +26,9 @@ export const ApiOkResponseWrapped = <TModel extends Type<any>>(model: TModel) =>
   );
 };
 
-export const ApiPaginatedResponse = <TModel extends Type<any>>(model: TModel) => {
+export const ApiPaginatedResponse = <TModel extends Type<any>>(
+  model: TModel,
+) => {
   return applyDecorators(
     ApiExtraModels(ResponsePaginationDto, model),
     ApiOkResponse({
@@ -41,7 +49,9 @@ export const ApiPaginatedResponse = <TModel extends Type<any>>(model: TModel) =>
   );
 };
 
-export const ApiCursorPaginatedResponse = <TModel extends Type<any>>(model: TModel) => {
+export const ApiCursorPaginatedResponse = <TModel extends Type<any>>(
+  model: TModel,
+) => {
   return applyDecorators(
     ApiExtraModels(ResponseCursorPaginationDto, model),
     ApiOkResponse({

@@ -14,13 +14,27 @@ export const DEFAULT_LIMIT = 20;
 export const MAX_LIMIT = 100;
 
 export const clampLimit = (limit?: number) => {
-  if (!limit || Number.isNaN(limit)) return DEFAULT_LIMIT;
+  if (limit === undefined || limit === null || Number.isNaN(limit))
+    return DEFAULT_LIMIT;
   return Math.min(Math.max(limit, 1), MAX_LIMIT);
 };
 
+/**
+ * Type representing a Prisma where condition that supports AND/OR.
+ */
+export type GenericPrismaWhere = {
+  AND?: GenericPrismaWhere | GenericPrismaWhere[];
+  OR?: GenericPrismaWhere[];
+  [key: string]: unknown;
+};
 
-
-export const applySearch = <TWhere extends { AND?: any }, TField extends string>(
+/**
+ * Applies search conditions to a Prisma where object.
+ */
+export const applySearch = <
+  TWhere extends GenericPrismaWhere,
+  TField extends string,
+>(
   where: TWhere,
   search: SearchInput<TField> | undefined,
   searchableFields: readonly TField[],
@@ -30,7 +44,7 @@ export const applySearch = <TWhere extends { AND?: any }, TField extends string>
   const fields = search.fields?.length ? search.fields : searchableFields;
 
   const currentAnd = where.AND;
-  const andConditions: any[] = Array.isArray(currentAnd)
+  const andConditions: GenericPrismaWhere[] = Array.isArray(currentAnd)
     ? [...currentAnd]
     : currentAnd
       ? [currentAnd]
@@ -45,11 +59,17 @@ export const applySearch = <TWhere extends { AND?: any }, TField extends string>
   return { ...where, AND: andConditions };
 };
 
-export const buildOrderBy = <TField extends string>(
+/**
+ * Builds a Prisma orderBy object from a SortInput.
+ */
+export const buildOrderBy = <
+  TField extends string,
+  TOrderBy extends Record<string, any>,
+>(
   sort: SortInput<TField> | undefined,
-  fallback: Record<string, SortDirection>,
-) => {
+  fallback: TOrderBy,
+): TOrderBy => {
   if (!sort) return fallback;
   const { field, direction = 'asc' } = sort;
-  return { [field]: direction } as Record<string, SortDirection>;
+  return { [field]: direction } as TOrderBy;
 };

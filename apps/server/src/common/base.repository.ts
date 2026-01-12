@@ -1,14 +1,10 @@
 import { PrismaService } from '../prisma/prisma.service';
 import { clampLimit, buildOrderBy, SortInput } from './prisma-query.util';
 
-export interface PrismaDelegate<
-  TModel,
-  TWhereInput,
-  TOrderByWithRelationInput,
-> {
+export interface PrismaDelegate<TModel, TWhereInput, TOrderByInput> {
   findMany(args: {
     where?: TWhereInput;
-    orderBy?: TOrderByWithRelationInput | TOrderByWithRelationInput[];
+    orderBy?: TOrderByInput | TOrderByInput[];
     skip?: number;
     take?: number;
     cursor?: any;
@@ -17,13 +13,17 @@ export interface PrismaDelegate<
 }
 
 export abstract class BaseRepository<
-  TModel,
+  TModel extends { id: string | number },
   TWhereInput,
-  TOrderByInput,
+  TOrderByInput extends Record<string, any>,
 > {
   constructor(
     protected readonly prisma: PrismaService,
-    protected readonly modelDelegate: PrismaDelegate<TModel, TWhereInput, TOrderByInput>,
+    protected readonly modelDelegate: PrismaDelegate<
+      TModel,
+      TWhereInput,
+      TOrderByInput
+    >,
   ) {}
 
   async listWithOffsetPagination(params: {
@@ -31,18 +31,29 @@ export abstract class BaseRepository<
     sort?: SortInput<string>;
     page?: number;
     limit?: number;
-    fallbackSort?: TOrderByInput;
-  }) {
+    fallbackSort: TOrderByInput;
+  }): Promise<{
+    data: TModel[];
+    pagination: { total: number; page: number; limit: number };
+  }> {
     const { where, sort, page = 1, fallbackSort } = params;
     const take = clampLimit(params.limit);
     const skip = Math.max((page - 1) * take, 0);
 
-    const orderBy = buildOrderBy(sort, fallbackSort as any) as any;
+    const orderBy = buildOrderBy<string, TOrderByInput>(sort, fallbackSort);
 
-    const [data, total] = await this.prisma.$transaction([
-      this.modelDelegate.findMany({ where, orderBy, skip, take }),
-      this.modelDelegate.count({ where }),
-    ] as any);
+    // Use unknown then cast to tuple to avoid any-related lint errors with $transaction
+    const result = await this.prisma.$transaction(async () => [
+      await this.modelDelegate.findMany({
+        where,
+        orderBy: orderBy as unknown as TOrderByInput,
+        skip,
+        take,
+      }),
+      await this.modelDelegate.count({ where }),
+    ]);
+
+    const [data, total] = result as [TModel[], number];
 
     return {
       data,
@@ -59,21 +70,33 @@ export abstract class BaseRepository<
     sort?: SortInput<string>;
     cursor?: string;
     limit?: number;
-    fallbackSort?: TOrderByInput;
-  }) {
+    fallbackSort: TOrderByInput;
+  }): Promise<{ data: TModel[]; nextCursor: string | null }> {
     const { where, sort, cursor, limit, fallbackSort } = params;
     const take = clampLimit(limit);
-    const orderBy = buildOrderBy(sort, fallbackSort as any) as any;
+    const orderBy = buildOrderBy<string, TOrderByInput>(sort, fallbackSort);
 
-    const data = await this.modelDelegate.findMany({
+    const findManyArgs: {
+      where?: TWhereInput;
+      orderBy?: TOrderByInput;
+      take: number;
+      cursor?: { id: string | number };
+      skip?: number;
+    } = {
       where,
-      orderBy,
+      orderBy: orderBy as unknown as TOrderByInput,
       take,
-      ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
-    });
+    };
+
+    if (cursor) {
+      findManyArgs.cursor = { id: cursor };
+      findManyArgs.skip = 1;
+    }
+
+    const data = await this.modelDelegate.findMany(findManyArgs);
 
     const nextCursor =
-      data.length === take ? (data[data.length - 1] as any).id : null;
+      data.length === take ? String(data[data.length - 1].id) : null;
 
     return { data, nextCursor };
   }

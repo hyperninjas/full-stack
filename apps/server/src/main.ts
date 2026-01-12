@@ -80,7 +80,7 @@ async function bootstrap() {
       stopAtFirstError: false,
     }),
   );
-  
+
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
 

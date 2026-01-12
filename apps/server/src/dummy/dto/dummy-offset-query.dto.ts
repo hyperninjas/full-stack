@@ -22,7 +22,10 @@ export class DummyOffsetQueryDto extends BaseOffsetQueryDto {
   @IsString()
   description?: string | null;
 
-  @ApiPropertyOptional({ description: 'Field to sort by', enum: SORTABLE_FIELDS })
+  @ApiPropertyOptional({
+    description: 'Field to sort by',
+    enum: SORTABLE_FIELDS,
+  })
   @IsOptional()
   @IsIn(SORTABLE_FIELDS)
   declare sortField?: DummyScalarField;

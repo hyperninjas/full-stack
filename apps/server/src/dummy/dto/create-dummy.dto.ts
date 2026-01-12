@@ -1,4 +1,10 @@
-import { IsString, IsOptional, IsUUID, MinLength, IsDate } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsUUID,
+  MinLength,
+  IsDate,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Prisma } from '@/generated/client';
@@ -9,12 +15,22 @@ export class CreateDummyDto implements Prisma.DummyModelCreateInput {
   @IsOptional()
   id?: string | undefined;
 
-  @ApiProperty({ description: 'The name of the dummy', required: true, minLength: 3, type: 'string' })
+  @ApiProperty({
+    description: 'The name of the dummy',
+    required: true,
+    minLength: 3,
+    type: 'string',
+  })
   @IsString()
   @MinLength(3)
   name: string;
 
-  @ApiPropertyOptional({ description: 'The description of the dummy', minLength: 15, nullable: true, type: 'string' })
+  @ApiPropertyOptional({
+    description: 'The description of the dummy',
+    minLength: 15,
+    nullable: true,
+    type: 'string',
+  })
   @IsString()
   @MinLength(15)
   @IsOptional()

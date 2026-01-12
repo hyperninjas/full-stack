@@ -1,13 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, DummyModel } from '../generated/client';
+import { Prisma } from '../generated/client';
 import { PrismaService } from '../prisma/prisma.service';
-import {
-  applySearch,
-} from '../common/prisma-query.util';
+import { applySearch } from '../common/prisma-query.util';
 import { BaseRepository } from '../common/base.repository';
-import type {
-  DummySearchField,
-} from './dto/dummy-query.dto';
+import type { DummySearchField } from './dto/dummy-query.dto';
 import { DummyOffsetQueryDto } from './dto/dummy-offset-query.dto';
 import { DummyCursorQueryDto } from './dto/dummy-cursor-query.dto';
 import { DummyDto } from './dto/dummy.dto';
@@ -58,7 +54,9 @@ export class DummyRepository extends BaseRepository<
     const { sortField, sortDirection, page, limit } = params;
     return super.listWithOffsetPagination({
       where: this.buildWhere(params),
-      sort: sortField ? { field: sortField, direction: sortDirection } : undefined,
+      sort: sortField
+        ? { field: sortField, direction: sortDirection }
+        : undefined,
       page,
       limit,
       fallbackSort: { createdAt: 'desc' },
@@ -69,7 +67,9 @@ export class DummyRepository extends BaseRepository<
     const { sortField, sortDirection, cursor, limit } = params;
     return super.listWithCursorPagination({
       where: this.buildWhere(params),
-      sort: sortField ? { field: sortField, direction: sortDirection } : undefined,
+      sort: sortField
+        ? { field: sortField, direction: sortDirection }
+        : undefined,
       cursor,
       limit,
       fallbackSort: { createdAt: 'desc' },

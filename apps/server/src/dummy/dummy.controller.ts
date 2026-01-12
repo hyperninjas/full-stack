@@ -13,22 +13,17 @@ import {
 import {
   ApiTags,
   ApiResponse,
-  ApiBody,
   ApiOperation,
   ApiExtraModels,
-  ApiQuery,
   ApiParam,
 } from '@nestjs/swagger';
-import { getSchemaPath } from '@nestjs/swagger';
 import { DummyService } from './dummy.service';
 import { CreateDummyDto } from './dto/create-dummy.dto';
 import { UpdateDummyDto } from './dto/update-dummy.dto';
 import { DummyDto } from './dto/dummy.dto';
 import { DummyOffsetQueryDto } from './dto/dummy-offset-query.dto';
 import { DummyCursorQueryDto } from './dto/dummy-cursor-query.dto';
-import {
-  ResponseDto,
-} from '../common/response.dto';
+import { ResponseDto } from '../common/response.dto';
 import {
   ApiOkResponseWrapped,
   ApiPaginatedResponse,
