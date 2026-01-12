@@ -1,3 +1,2 @@
-pnpm install
 pnpm lint
 pnpm build

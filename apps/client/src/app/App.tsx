@@ -8,6 +8,7 @@ import SettingsPanelProvider from 'providers/SettingsPanelProvider';
 import { useSettingsContext } from 'providers/SettingsProvider';
 import { REFRESH } from 'reducers/SettingsReducer';
 import SettingsPanel from 'components/settings-panel/SettingsPanel';
+import { ErrorBoundary } from 'components/common/ErrorBoundary';
 
 const SettingPanelToggler = dynamic(() => import('components/settings-panel/SettingPanelToggler'), {
   ssr: false,
@@ -31,11 +32,13 @@ const App = ({
   }, [mode]);
 
   return (
+    <ErrorBoundary>
     <SettingsPanelProvider>
       {children}
       <SettingsPanel />
       <SettingPanelToggler />
     </SettingsPanelProvider>
+    </ErrorBoundary>
   );
 };
 

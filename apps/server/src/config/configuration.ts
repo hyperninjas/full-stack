@@ -41,7 +41,11 @@ export type CorsConfiguration = Configuration['cors'];
 export type OpenapiConfiguration = Configuration['openapi'];
 export type AuthConfiguration = Configuration['auth'];
 
+import { validateEnvironment } from './env.validation';
+
 export default () => {
+  // Validate environment variables
+  validateEnvironment(process.env);
   const rawOrigins = process.env.CORS_ORIGINS?.split(',') || [];
   const rawHeaders = process.env.CORS_ALLOWED_HEADERS?.split(',') || [];
   const credentials = Boolean(process.env.CORS_CREDENTIALS);
