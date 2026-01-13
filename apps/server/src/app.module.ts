@@ -3,7 +3,9 @@ import { ConfigModule } from '@nestjs/config';
 import { CacheModule } from '@nestjs/cache-manager';
 import { APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core';
 import { CacheInterceptor } from '@nestjs/cache-manager';
-import configuration from './config/configuration';
+import { appConfig } from './config/app.config';
+import { secretsConfig } from './config/secrets.config';
+import { validate } from './config/env.validation';
 import { HttpModule } from '@nestjs/axios';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { TerminusModule } from '@nestjs/terminus';
@@ -18,9 +20,9 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: ['.env', '.env.production'],
-      load: [configuration],
-      // cache: true,
+      envFilePath: ['.env.local', '.env'],
+      load: [appConfig, secretsConfig],
+      validate,
       isGlobal: true,
     }),
     AuthModule.forRoot({

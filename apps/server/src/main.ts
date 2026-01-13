@@ -7,7 +7,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { mkdirSync, writeFileSync } from 'fs';
 import path from 'path';
-import {
+import type {
   CorsConfiguration,
   OpenapiConfiguration,
 } from './config/configuration';
@@ -21,11 +21,11 @@ async function bootstrap() {
     logger: ['log', 'error', 'warn', 'debug', 'fatal'],
   });
   const configService = app.get(ConfigService);
-  const port = configService.get<number>('port')!;
-  const env = configService.get<string>('env')!;
+  const port = configService.get<number>('app.port')!;
+  const env = configService.get<string>('app.env')!;
   const isDev = env === 'development';
-  const corsConfig = configService.get<CorsConfiguration>('cors')!;
-  const openapiConfig = configService.get<OpenapiConfiguration>('openapi')!;
+  const corsConfig = configService.get<CorsConfiguration>('app.cors')!;
+  const openapiConfig = configService.get<OpenapiConfiguration>('app.openapi')!;
 
   if (!isDev) {
     app.use(compression({}));
@@ -62,7 +62,7 @@ async function bootstrap() {
       },
     }),
   );
-  console.log(corsConfig);
+  // Intentionally not logging corsConfig to avoid secret exposure
 
   app.enableCors({
     origin: corsConfig.origins,
