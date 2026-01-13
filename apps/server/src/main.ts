@@ -28,7 +28,7 @@ async function bootstrap() {
   const openapiConfig = configService.get<OpenapiConfiguration>('app.openapi')!;
 
   if (!isDev) {
-    app.use(compression({}));
+    app.use(compression());
   }
   app.use(
     helmet({
