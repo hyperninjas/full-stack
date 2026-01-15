@@ -123,8 +123,16 @@ export abstract class BaseRepository<
 
     const where: Record<string, unknown> = { ...filters };
 
-    // Standard filters are now strict equality by default for performance (index usage)
-    // Fuzzy search should be done via the specific 'searchTerm' parameter/applySearch logic
+    // Iterate over filters to check for searchable fields
+    for (const [key, value] of Object.entries(filters)) {
+      if (
+        this.options.searchableFields?.includes(key as keyof TModel & string) &&
+        typeof value === 'string'
+      ) {
+        // Apply fuzzy match for specific searchable fields
+        where[key] = { contains: value, mode: 'insensitive' };
+      }
+    }
 
     if (searchTerm && this.options.searchableFields) {
       // Cast where to GenericPrismaWhere for applySearch
