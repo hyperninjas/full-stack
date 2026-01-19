@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useId, useMemo } from 'react';
 import { Link, SvgIcon, SvgIconProps, Typography, typographyClasses } from '@mui/material';
 import { useSettingsContext } from 'providers/SettingsProvider';
 import { rootPaths } from 'routes/paths';
@@ -8,7 +8,7 @@ interface LogoProps extends SvgIconProps {
 }
 
 const Logo = ({ sx, viewBox = '0 0 26 40', showName = true, ...rest }: LogoProps) => {
-  const [id, setId] = useState('logo');
+  const id = useId();
 
   const {
     config: { navColor },
@@ -17,10 +17,6 @@ const Logo = ({ sx, viewBox = '0 0 26 40', showName = true, ...rest }: LogoProps
   const color = useMemo(() => {
     return navColor === 'vibrant' ? '#A641FA' : '#20DE99';
   }, [navColor]);
-
-  useEffect(() => {
-    setId(`logo-${Math.floor(Math.random() * 1000) + 1}`);
-  }, []);
 
   return (
     <Link
