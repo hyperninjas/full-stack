@@ -40,6 +40,7 @@ const ScrollSpy = ({ children, offset: globalOffset }: PropsWithChildren<ScrollS
   const [activeElemId, setActiveElemId] = useState('');
   const sectionRefs = useRef<SectionRef>({});
   const lastScrollTopRef = useRef(0);
+  const ticking = useRef(false);
 
   const isInView = ({
     element,
@@ -105,13 +106,25 @@ const ScrollSpy = ({ children, offset: globalOffset }: PropsWithChildren<ScrollS
     }
   }, [globalOffset]);
 
+  // Throttle scroll event using requestAnimationFrame to reduce reflows
+  const onScroll = useCallback(() => {
+    if (!ticking.current) {
+      window.requestAnimationFrame(() => {
+        spy();
+        ticking.current = false;
+      });
+
+      ticking.current = true;
+    }
+  }, [spy]);
+
   useEffect(() => {
     spy();
-    window.addEventListener('scroll', spy);
+    window.addEventListener('scroll', onScroll);
     return () => {
-      window.removeEventListener('scroll', spy);
+      window.removeEventListener('scroll', onScroll);
     };
-  }, [spy]);
+  }, [onScroll, spy]);
 
   return (
     <ScrollSpyContext
