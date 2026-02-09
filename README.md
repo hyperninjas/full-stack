@@ -1,116 +1,145 @@
 # Full Stack Monorepo
 
-A pnpm workspace with two apps under `apps/`:
+A pnpm workspace with two main packages available at the root:
 
-- `apps/client`: Next.js app
-- `apps/server`: NestJS API
+- `client`: Next.js app (Frontend)
+- `server`: NestJS API (Backend)
 
 ## Prerequisites
 
 - Node.js 22.x
-- pnpm 10.16.1 (repo is pinned via `packageManager`)
+- pnpm 10.25.0
 - Postgres (local) for server development
 
-## Install
+## Quick Start
 
-```bash
-pnpm install
-```
+1. **Install Dependencies**
+   ```bash
+   pnpm install
+   ```
+   This installs dependencies for both `client` and `server`.
 
-## Install dependencies for a specific app
+2. **Setup Database**
+   Ensure your local Postgres is running.
+   ```bash
+   # Set the database URL environment variable (required for Prisma)
+   export DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres"
 
-- **Add a runtime dependency**
+   # Generate Prisma Client
+   pnpm --filter server prisma:generate
+   # Or using the root alias:
+   pnpm prebuild
+
+   # Push the schema to your local database
+   pnpm --filter server prisma:migrate
+   # Or using the root alias:
+   pnpm migrate
+   ```
+
+3. **Generate API Client**
+   The frontend uses a generated TypeScript client to interact with the backend API.
+   ```bash
+   pnpm --filter client openapi
+   ```
+   This runs `openapi-generator-cli` using the configuration in `client/openapi-generator.config.json`.
+
+4. **Run Development Server**
+   Start both client and server in parallel:
+   ```bash
+   pnpm dev
+   ```
+   - **Client**: [http://localhost:3001](http://localhost:3001)
+   - **Server**: [http://localhost:3000](http://localhost:3000)
+
+## Development Workflow
+
+### Managing Dependencies
+
+Since this is a monorepo, you must specify which package to install dependencies into.
+
+- **Add a runtime dependency** (e.g., `lodash` to client):
   ```bash
-  pnpm add <pkg> --filter client
-  pnpm add <pkg> --filter server
+  pnpm add lodash --filter client
   ```
-- **Add a dev dependency**
+- **Add a dev dependency** (e.g., `jest` to server):
   ```bash
-  pnpm add -D <pkg> --filter client
-  pnpm add -D <pkg> --filter server
+  pnpm add -D jest --filter server
   ```
-- **Remove a dependency**
+- **Remove a dependency**:
   ```bash
-  pnpm remove <pkg> --filter client
-  pnpm remove <pkg> --filter server
+  pnpm remove <package_name> --filter client
   ```
-- **Add the same dependency to both apps**
+- **Add to both packages**:
   ```bash
-  pnpm add <pkg> --filter client --filter server
+  pnpm add <package_name> --filter client --filter server
   ```
 
-## Workspace
+### Build & Start
 
-- Defined in `pnpm-workspace.yaml` with `packages: - apps/*`.
-- Root `package.json` contains scripts to run each app and both together.
-
-## Database (Prisma + Postgres)
-
-- Ensure a local Postgres is running and `DATABASE_URL` is set (used by CI and local):
+- **Build everything**:
   ```bash
-  export DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres"
+  pnpm build
   ```
-- Generate Prisma client:
+- **Start production**:
   ```bash
-  pnpm -r --filter server run prisma:generate
+  pnpm start
   ```
-- Create/update schema in your DB:
+- **Build/Start individual apps**:
   ```bash
-  pnpm --filter server exec prisma db push
+  pnpm build:client
+  pnpm build:server
   ```
 
-## Common Scripts (run from repo root)
+### Testing & Linting
 
-- `pnpm dev` — run client and server in parallel
-- `pnpm build` — build both apps in parallel
-- `pnpm start` — start both apps in parallel (expects they are built)
-- `pnpm dev:client` — run Next.js dev server
-- `pnpm dev:server` — run NestJS in watch mode
-- `pnpm build:client` / `pnpm build:server`
-- `pnpm start:client` / `pnpm start:server`
-- `pnpm lint:client` / `pnpm lint:server`
-
-## Testing
-
-- Server tests (Jest):
+- **Server Tests**:
   ```bash
   pnpm --filter server test
-  pnpm --filter server test:cov
   pnpm --filter server test:e2e
   ```
+- **Lint Code**:
+  ```bash
+  pnpm lint
+  ```
 
-## Development
+## Monorepo Structure
 
-- Client default dev URL: `http://localhost:3000`
-- Server default port: `3000`
-- To run both together, use `pnpm dev`.
+The project uses pnpm workspaces defined in `pnpm-workspace.yaml`.
 
-If you hit a port conflict (`EADDRINUSE: 3000`), adjust one app’s port via env:
-
-- Next.js: `PORT=3001 pnpm dev:client`
-- NestJS: configure `apps/server/src/main.ts` to read `process.env.PORT` with a fallback.
+```text
+/
+├── client/           # Next.js Frontend
+│   ├── openapi-generator.config.json
+│   └── package.json
+├── server/           # NestJS Backend
+│   ├── prisma/
+│   └── package.json
+├── .changeset/       # Versioning configuration
+├── package.json      # Root scripts & dev dependencies
+└── pnpm-workspace.yaml
+```
 
 ## Changesets (Versioning + Changelogs)
 
-- Config at `.changeset/config.json` (targets `apps/*`, base branch `main`).
-- Create a changeset:
+- Config at `.changeset/config.json`.
+- Create a changeset (run this when you make changes):
   ```bash
   pnpm changeset
   ```
-- Apply versions and update lockfile:
+- Apply versions and update lockfile (CI/CD usually handles this):
   ```bash
   pnpm version-packages
   ```
-- Build and publish (skips private apps):
+- Build and publish:
   ```bash
   pnpm release
   ```
 
 ## Git hooks (Husky) & Commitlint
 
-- **Hooks installation**: hooks are installed on `pnpm install` via the root `prepare` script (`husky install`).
-- **Pre-commit**: runs `pnpm run lint`, which fans out to `apps/client` and `apps/server` lint scripts.
-- **Commit message check**: `commit-msg` runs Conventional Commits via Commitlint.
+- **Hooks installation**: automatic on `pnpm install` via `prepare` script.
+- **Pre-commit**: runs `pnpm run lint`.
+- **Commit message check**: enforces Conventional Commits.
 
 ### Conventional commit examples
 
@@ -121,44 +150,11 @@ chore(client): update eslint config
 docs: update README
 ```
 
-### Manual commit message check
-
-```bash
-echo "feat: something" | pnpm exec commitlint
-pnpm exec commitlint --edit .git/COMMIT_EDITMSG
-```
-
-### Bypass hooks (not recommended)
-
-```bash
-git commit -m "wip: temp" --no-verify
-```
-
-Notes:
-
-- Packages in `apps/` are `"private": true` and will not be published.
-- Initialize git and ensure your default branch is `main` to match Changesets baseBranch.
-
-## CI & Repository automation
-
-- CI workflow builds and lints on PRs to `main`.
-- Semantic PR title check enforces Conventional Commit-style PR titles.
-- Labels are defined in `.github/labels.yml`. Sync via Actions → "Sync Labels".
-- Issue templates (Bug / Feature / Task) and a PR template are provided in `.github/`.
-
-## Project Structure
-
-```bash
-apps/
-  client/
-  server/
-.changeset/
-package.json
-pnpm-workspace.yaml
-```
-
 ## Troubleshooting
 
-- Change base port to avoid conflicts or stop the process occupying it.
-- Ensure `git` is initialized and the default branch is `main` for the Changesets suggested-flow to work without warnings.
-- Next.js build warning about `outputFileTracingRoot` being absolute is addressed in `apps/client/next.config.ts`.
+- **Port Conflicts**:
+  - Client defaults to port `3001` (configured in `client/package.json`).
+  - Server defaults to port `3000`.
+  - If you encounter `EADDRINUSE`, check for running processes or adjust ports.
+- **Prisma Client Not Found**:
+  - If the server fails to start with this error, run `pnpm --filter server prisma:generate` to regenerate the client.
