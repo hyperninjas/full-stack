@@ -1,5 +1,6 @@
 packages:
-  - apps/*
+  - 'client'
+  - 'server'
 
 injectWorkspacePackages: true
 
