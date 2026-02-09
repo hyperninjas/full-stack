@@ -7,7 +7,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Prisma } from '@/generated/client';
+import { Prisma } from '@/generated/prisma/client';
 
 export class CreateDummyDto implements Prisma.DummyModelCreateInput {
   @ApiPropertyOptional({ description: 'The unique identifier of the dummy' })

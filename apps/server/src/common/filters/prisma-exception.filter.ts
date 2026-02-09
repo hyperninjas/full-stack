@@ -1,6 +1,6 @@
 import { ArgumentsHost, Catch, HttpStatus } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
-import { Prisma } from '@/generated/client';
+import { Prisma } from '@/generated/prisma/client';
 import { Response } from 'express';
 
 @Catch(Prisma.PrismaClientKnownRequestError)

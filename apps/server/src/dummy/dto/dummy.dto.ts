@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { DummyModel } from '@/generated/client';
+import { DummyModel } from '@/generated/prisma/client';
 
 export class DummyDto implements DummyModel {
   @ApiProperty({ description: 'The unique identifier' })

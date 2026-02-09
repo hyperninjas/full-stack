@@ -1,4 +1,4 @@
-import type { DummyModel } from '@/generated/client';
+import type { DummyModel } from '@/generated/prisma/client';
 
 export type DummyScalarField = keyof Pick<
   DummyModel,

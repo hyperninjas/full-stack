@@ -1,5 +1,5 @@
 import { PrismaService } from '../prisma/prisma.service';
-import { Prisma } from '../generated/client';
+import { Prisma } from '../generated/prisma/client';
 import {
   clampLimit,
   buildOrderBy,
@@ -191,7 +191,7 @@ export abstract class BaseRepository<
         take,
       }),
       this.modelDelegate.count({ where }),
-    ] as [Prisma.PrismaPromise<TModel[]>, Prisma.PrismaPromise<number>]);
+    ]);
 
     return {
       data,
