@@ -2,6 +2,7 @@
 
 import { PropsWithChildren, useEffect, useRef } from 'react';
 import SimpleBar from 'simplebar-react';
+import Image from 'next/image';
 import {
   Avatar,
   Box,
@@ -192,7 +193,7 @@ const SearchResult = ({ handleClose }: { handleClose: () => void }) => {
                       <IconifyIcon icon={file.icon} fontSize={32} color="primary.main" />
                     )}
                     {file.image && (
-                      <img src={file.image} alt={file.name} height={30} width={30} />
+                      <Image src={file.image} alt={file.name} height={30} width={30} />
                     )}
                   </ListItemIcon>
                   <Tooltip title={file.name} placement="top-start">

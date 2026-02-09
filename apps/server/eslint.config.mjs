@@ -12,6 +12,7 @@ export default tseslint.config(
   ...tseslint.configs.recommendedTypeChecked,
   eslintPluginPrettierRecommended,
   {
+    ignores: ['src/generated/prisma'],
     languageOptions: {
       globals: {
         ...globals.node,
@@ -32,4 +33,5 @@ export default tseslint.config(
       "prettier/prettier": ["error", { endOfLine: "auto" }],
     },
   },
+  
 );
